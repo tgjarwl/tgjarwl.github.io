@@ -3,9 +3,9 @@ layout: page
 title: 关于我 
 ---
 
-学习使人快乐~  
-基础知识，步步为营，不急不躁
+360 资深 安全研究攻城狮一枚。
 
+邮箱 tgjarwl@ouelook.com
 
-{% include comments.html %}
+;{% include comments.html %}
 
