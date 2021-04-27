@@ -7,5 +7,4 @@ title: 关于我
 
 邮箱 tgjarwl@ouelook.com
 
-;{% include comments.html %}
 
