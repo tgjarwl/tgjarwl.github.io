@@ -6,23 +6,24 @@ tags: dotnet
 ---
 
 
-# 文件区别
+## 文件区别
 
 以 system.dll 和 system.ni.dll 举例，这两个文件的不同在于，system.dll 中的 il 代码在被调用前需要 经过 jit（mscorjit.dll 或者 clrjit.dll）模块中 CompileMethod 方法编译成 汇编代码。而system.ni.dll 则是已经被提前 jit 的代码。运行时不需要再调用 CompileMethod 去编译。
 
 出于一些监控的目的，可能需要去hook jit后的汇编代码。那就需要定位jit后的代码的位置。下面用一些小技巧在 windbg 中快速定位，
 
 
-# 加载 sos 扩展模块
+## 加载 sos 扩展模块
 
+```
 .loadby sos clr
+```
 
-
-# 关键点
+## 关键点
 
 .net 扩展指令 !bpmd -MD [MethodDesc] 指令如果发现某方法已经被jit过了，则会直接对jit后的地址下断点。因为加载的是 ni.dll。 本身已经是被jit过的。所以把jit后的地址给拿到。从而省区了很多麻烦。
 
-# 查找目标类的 MethodTable 
+## 查找目标类的 MethodTable 
 
 例如：System.Net.WebClient.DownloadFile方法
 
@@ -42,7 +43,7 @@ Name:        System.Net.WebClient
 
 ```
 
-# 查找目标方法的 MethodDesc
+## 查找目标方法的 MethodDesc
 
 ```
 0:023> !DumpMT -MD 00007ffa70002788
@@ -69,7 +70,7 @@ Number of IFaces in IFaceMap: 2
 
 ```
 
-# 下断点，找到 jit 后的地址
+## 下断点，找到 jit 后的地址
 
 ```
 0:023> !bpmd -MD 00007ffa70156278
