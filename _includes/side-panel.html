@@ -3,26 +3,6 @@
 
     <div class="panel-main__inner panel-inverted">
     <div class="panel-main__content">
-        <!-- 头像效果-start -->
-        <div class="panel-cover__title panel-title">            
-            <a href="/#blog" title="前往 {{ site.title }} 的主页" class="blog-button">
-                <div class="info">
-                    <div class="info-back">
-                        <p> 
-                            {% if site.avatarTitle %}
-                                {{site.avatarTitle}}
-                            {% endif %}
-                        </p>
-                        <p>
-                           {% if site.avatarDesc %}
-                                {{site.avatarDesc}}
-                            {% endif %}
-                        </p>
-                    </div>
-                </div>
-            </a>
-        </div>
-        <!-- 头像效果-end -->
         <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for {{ site.title }}" class="blog-button">{{ site.title }}</a></h1>
         {% if site.subtitle %}
         <span class="panel-cover__subtitle panel-subtitle">{{site.subtitle}}</span>
