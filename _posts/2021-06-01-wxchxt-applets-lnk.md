@@ -2,6 +2,7 @@
 layout: post
 title: 某信创建小程序快捷方式
 date: 2021-06-01
+mulu: 逆向
 tags: 逆向开发
 ---
 
