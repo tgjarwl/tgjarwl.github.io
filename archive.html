@@ -9,4 +9,12 @@ group: navigation
 {% assign posts_collate = site.posts %}
 <div class="page card">
 {% include JB/posts_collate %}
+
+{% for item in site.categories %}
+<div >
+    <ul>
+        {{item}}
+    </ul>
+</div>
+{% endfor %}
 </div>
