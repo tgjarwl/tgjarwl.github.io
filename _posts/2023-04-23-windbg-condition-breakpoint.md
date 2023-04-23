@@ -9,7 +9,7 @@ tags: windbg
 马上五一了，从过年到现在一次都没有回家呢，再不回去，整个人都不好了。2023，又是特殊的一年。
 
 ## 条件断点
-windbg中支持 javascript 脚本，这是一个很强大的功能。 强两天在测试功能的时候，需要安装sql server，但是安装过程竟然被拦截了，通过procmon 发现，在进程创建的时候，直接通过apc 退出了，那么第一反应，必然是某个驱动在进程创建的时候给杀掉了进程。折腾了好长时间，最终无奈还是上了双击调试。但是NtTerminateProcess 在整个的安装过程中调用太频繁，没法一次一次的手工恢复执行，只能使用条件断点。查看完机器上的我司的驱动后，发现就那么几个，在断点处，回溯下堆栈，只要有我司的驱动模块，就中断下来。于是想到了强大的 JavaScript 脚本。
+windbg中支持 javascript 脚本，这是一个很强大的功能。 前两天在测试功能的时候，需要安装sql server，但是安装过程竟然被拦截了，通过procmon 发现，在进程创建的时候，直接通过apc 退出了，那么第一反应，必然是某个驱动在进程创建的时候给杀掉了进程。折腾了好长时间，最终无奈还是上了双击调试。但是NtTerminateProcess 在整个的安装过程中调用太频繁，没法一次一次的手工恢复执行，只能使用条件断点。查看完机器上的我司的驱动后，发现就那么几个，在断点处，回溯下堆栈，只要有我司的驱动模块，就中断下来。于是想到了强大的 JavaScript 脚本。
 
 ## 第一次的失败尝试
 加载jsprovider.dll， 之后执行.scriptproviders 确保成功加载了。
@@ -24,7 +24,6 @@ Available Script Providers:
 
 于是三下五除二，便搞定了脚本的核心功能
 ```javascript
-
 // E:\bug\ContitionBreak.js
 
  // Use JavaScript stric mode 
@@ -44,7 +43,7 @@ function invokeScript()
 		host.diagnostics.debugLog(line+"\n");
 		if(line.indexOf("AtdrAgent") != -1 ){
 			host.diagnostics.debugLog("hit \n");
-            bStop = 1;
+            		bStop = 1;
 			break;
 		}
 	}
@@ -85,6 +84,7 @@ kd> bp nt!NtTerminateProcess ".scriptrun E:\\bug\\ContitionBreak.js; .if ($t0 ==
 
 脚本里面的内容改成下面的样子
 ```javascript
+// E:\bug\ContitionBreak.js
 
 // Use JavaScript stric mode 
 "use strict";
@@ -136,4 +136,4 @@ nt!NtTerminateProcess:
 
 
 ## 总结
-很多事情都会过去，要么鉴定的走过去，要么绕道过去，生活不过是一个路途而已，不必太过于纠结
+很多事情都会过去，要么坚定的走过去，要么绕道过去，生活不过是一个旅途而已，不必太过于纠结
