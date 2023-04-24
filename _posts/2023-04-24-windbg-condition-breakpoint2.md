@@ -1,6 +1,6 @@
 ---
 layout: post
-title: windbg中使用js脚本设置条件断点 - 效率篇
+title: windbg中使用js脚本设置条件断点 - 优化篇
 date: 2023-04-24
 tags: windbg
 ---
@@ -72,7 +72,7 @@ kd> bl
 
 ```
 
-经过优化后的脚本，速度比以前有了很大的改善，这才是心目中想想的样子
+经过优化后的脚本，速度比以前有了很大的改善，这才是心目中想象的样子
 ```
 called
  # ChildEBP RetAddr      Args to Child              
