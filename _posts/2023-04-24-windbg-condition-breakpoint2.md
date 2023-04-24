@@ -93,14 +93,14 @@ nt!NtTerminateProcess:
 ## 后记
 上面的脚本内容里面还是有点不够优雅，后来经过改良，变成了下面这样子
 ```
-kd> bp nt!NtTerminateProcess "dx @$t0=Debugger.State.Scripts.auto.Contents.IsNeedBreck(); .if (@$t0 == 1) {} .else {gc}"
+kd> bp nt!NtTerminateProcess "dx @$t0=Debugger.State.Scripts.auto.Contents.IsNeedBreak(); .if (@$t0 == 1) {} .else {gc}"
 breakpoint 0 redefined
 ```
 
 改良的地方从脚本内设置 @$t0 变成了 @$t0 接收函数的返回值，这样子就实现了真正调用函数一样的习惯。 且减少了内部不必要的调用，脚本内容如下：
 ```javascript
 // WinDbg JavaScript sample
-function IsNeedBreck()
+function IsNeedBreak()
  {
      var ctl = host.namespace.Debugger.Utility.Control;
 	
