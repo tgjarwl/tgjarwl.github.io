@@ -1,5 +1,5 @@
 # tgjarwl.github.io
-tgjarwl的博客 -  安全研究攻城狮
+tgjarwl的博客
 
 #### 感谢   
 
