@@ -376,3 +376,34 @@ int main()
 [31788] };
 
 ```
+
+## 后记
+比如想监控共享目录的变更，则可以按照下的方式修改下 sql 语句即可
+```c++
+hres = g_pSvc->ExecNotificationQueryAsync(
+            _bstr_t("WQL"),
+            _bstr_t("SELECT * FROM __InstanceOperationEvent WITHIN 1 WHERE TargetInstance ISA 'Win32_Share'"),
+            WBEM_FLAG_SEND_STATUS,
+            NULL,
+            g_pStubSink);
+
+下面是监控到的输出信息：
+[7788] e:\project\test\test\eventsink.cpp(66) : atlTraceGeneral - [EnumWmiObject] in
+[7788] e:\project\test\test\eventsink.cpp(85) : atlTraceGeneral - [EnumWmiObject] object text: 
+[7788] instance of __InstanceDeletionEvent
+[7788] {
+[7788]  TargetInstance = 
+[7788] instance of Win32_Share
+[7788] {
+[7788]  AllowMaximum = TRUE;
+[7788]  Caption = "Docs";
+[7788]  Description = "";
+[7788]  Name = "Docs";
+[7788]  Path = "E:\\test";
+[7788]  Status = "OK";
+[7788]  Type = 0;
+[7788] };
+[7788]  TIME_CREATED = "133329082346092102";
+[7788] };
+
+```
