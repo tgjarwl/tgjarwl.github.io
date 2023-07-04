@@ -319,53 +319,58 @@ int main()
 
 
 ## 输出
-输出见下面的内容，可以看到内容还是很丰富的，当然，随着监控的不同，输出的内容也会不一样，理论上通过这个东西搞个edr，也是木有问题的。
+输出见下面的内容，可以看到内容还是很丰富的，当然，随着监控的不同，输出的内容也会不一样，理论上通过这个东西搞个edr，也是木有问题。下面的exe path 输出是
 ```c++
-e:\project\test\test\eventsink.cpp(66) : atlTraceGeneral - [EnumWmiObject] ine:\project\test\test\eventsink.cpp(91) : atlTraceGeneral - [EnumWmiObject] exe path: (null)e:\project\test\test\eventsink.cpp(104) : atlTraceGeneral - [EnumWmiObject] object text: 
-instance of __InstanceCreationEvent
-{
-	TargetInstance = 
-    instance of Win32_Process
-    {
-        Caption = "360secore.exe";
-        CreationClassName = "Win32_Process";
-        CreationDate = "20230704081536.018309+480";
-        CSCreationClassName = "Win32_ComputerSystem";
-        CSName = "2SCDJH3";
-        Description = "360secore.exe";
-        Handle = "32312";
-        HandleCount = 290;
-        KernelModeTime = "625000";
-        Name = "360secore.exe";
-        OSCreationClassName = "Win32_OperatingSystem";
-        OSName = "Microsoft Windows 10 专业版|C:\\windows|\\Device\\Harddisk1\\Partition3";
-        OtherOperationCount = "4147";
-        OtherTransferCount = "91573";
-        PageFaults = 6804;
-        PageFileUsage = 6560;
-        ParentProcessId = 35568;
-        PeakPageFileUsage = 6684;
-        PeakVirtualSize = "193835008";
-        PeakWorkingSetSize = 18064;
-        Priority = 8;
-        PrivatePageCount = "6717440";
-        ProcessId = 32312;
-        QuotaNonPagedPoolUsage = 21;
-        QuotaPagedPoolUsage = 197;
-        QuotaPeakNonPagedPoolUsage = 22;
-        QuotaPeakPagedPoolUsage = 198;
-        ReadOperationCount = "744";
-        ReadTransferCount = "21573180";
-        SessionId = 7;
-        ThreadCount = 9;
-        UserModeTime = "1875000";
-        VirtualSize = "191979520";
-        WindowsVersion = "10.0.19042";
-        WorkingSetSize = "18366464";
-        WriteOperationCount = "4";
-        WriteTransferCount = "216";
-    };
-	TIME_CREATED = "133329033363628723";
-};
+[31788] e:\project\test\test\eventsink.cpp(91) : atlTraceGeneral - [EnumWmiObject] exe path: C:\Users\tgjarwl\AppData\Roaming\360safe\SoftMgr\MultiTip.exe
+[31788] e:\project\test\test\eventsink.cpp(104) : atlTraceGeneral - [EnumWmiObject] object text: 
+[31788] instance of __InstanceCreationEvent
+[31788] {
+[31788]  TargetInstance = 
+[31788] instance of Win32_Process
+[31788] {
+[31788]  Caption = "MultiTip.exe";
+[31788]  CommandLine = "\"C:\\Users\\tgjarwl\\AppData\\Roaming\\360safe\\SoftMgr\\MultiTip.exe\" dl=10 timeout=300 /globalspan=1500 /Message= ......";
+[31788]  CreationClassName = "Win32_Process";
+[31788]  CreationDate = "20230704082910.951188+480";
+[31788]  CSCreationClassName = "Win32_ComputerSystem";
+[31788]  CSName = "2SCDJH3";
+[31788]  Description = "MultiTip.exe";
+[31788]  ExecutablePath = "C:\\Users\\tgjarwl\\AppData\\Roaming\\360safe\\SoftMgr\\MultiTip.exe";
+[31788]  Handle = "24408";
+[31788]  HandleCount = 242;
+[31788]  KernelModeTime = "156250";
+[31788]  MaximumWorkingSetSize = 1380;
+[31788]  MinimumWorkingSetSize = 200;
+[31788]  Name = "MultiTip.exe";
+[31788]  OSCreationClassName = "Win32_OperatingSystem";
+[31788]  OSName = "Microsoft Windows 10 专业版|C:\\windows|\\Device\\Harddisk1\\Partition3";
+[31788]  OtherOperationCount = "939";
+[31788]  OtherTransferCount = "41988";
+[31788]  PageFaults = 6101;
+[31788]  PageFileUsage = 10988;
+[31788]  ParentProcessId = 33380;
+[31788]  PeakPageFileUsage = 10988;
+[31788]  PeakVirtualSize = "113082368";
+[31788]  PeakWorkingSetSize = 22016;
+[31788]  Priority = 8;
+[31788]  PrivatePageCount = "11251712";
+[31788]  ProcessId = 24408;
+[31788]  QuotaNonPagedPoolUsage = 20;
+[31788]  QuotaPagedPoolUsage = 180;
+[31788]  QuotaPeakNonPagedPoolUsage = 20;
+[31788]  QuotaPeakPagedPoolUsage = 180;
+[31788]  ReadOperationCount = "792";
+[31788]  ReadTransferCount = "28451563";
+[31788]  SessionId = 7;
+[31788]  ThreadCount = 6;
+[31788]  UserModeTime = "2187500";
+[31788]  VirtualSize = "112099328";
+[31788]  WindowsVersion = "10.0.19042";
+[31788]  WorkingSetSize = "22540288";
+[31788]  WriteOperationCount = "0";
+[31788]  WriteTransferCount = "0";
+[31788] };
+[31788]  TIME_CREATED = "133329041512191254";
+[31788] };
 
 ```
