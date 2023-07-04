@@ -15,6 +15,8 @@ __InstanceOperationEvent 这个类可以通过wmi监控系统里面发生的一�
 __InstanceCreationEvent
 __InstanceModificationEvent
 __InstanceDeletionEvent
+
+关于event的详细情况，可以看我之前的一篇文章 wmi-event， https://tgjarwl.github.io/2021/07/wmi-event/  ， 这两篇文章是绝配的
 ```
 
 ## 直接贴代码吧
