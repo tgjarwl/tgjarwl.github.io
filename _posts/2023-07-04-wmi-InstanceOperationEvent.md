@@ -319,7 +319,7 @@ int main()
 
 
 ## 输出
-输出见下面的内容，可以看到内容还是很丰富的，当然，随着监控的不同，输出的内容也会不一样，理论上通过这个东西搞个edr，也是木有问题。下面的exe path 输出是
+输出见下面的内容，可以看到内容还是很丰富的，当然，随着监控的不同，输出的内容也会不一样，理论上通过这个东西搞个edr，也是木有问题。需要特别注意的是，有些监控点需要管理员权限
 ```c++
 [31788] e:\project\test\test\eventsink.cpp(91) : atlTraceGeneral - [EnumWmiObject] exe path: C:\Users\tgjarwl\AppData\Roaming\360safe\SoftMgr\MultiTip.exe
 [31788] e:\project\test\test\eventsink.cpp(104) : atlTraceGeneral - [EnumWmiObject] object text: 
