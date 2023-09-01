@@ -15,7 +15,7 @@ tags: [js,逆向开发]
 通过查找引用，是直接可以找到关键代码的，如下图：
 ![avatar](/images/pages/2023_07_12_water_mark/water_mark_fix.png)
 
-于是乎，旧版本的tt，就可以直接去掉水印了。 patck完，替换，完美。
+于是乎，旧版本的tt，就可以直接去掉水印了。 patch完，替换，完美。
 
 
 ## 架构变更
