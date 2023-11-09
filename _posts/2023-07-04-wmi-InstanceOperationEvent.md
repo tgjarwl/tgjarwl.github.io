@@ -267,7 +267,6 @@ HRESULT CWmiMonitor::Start(LPCWSTR lpMonitorStr, IUnknown *pEventSink)
         return hres;
     } while (FALSE);
 
-    Stop();
     return hres;
 }
 
