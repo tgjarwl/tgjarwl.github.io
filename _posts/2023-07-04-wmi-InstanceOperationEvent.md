@@ -25,32 +25,20 @@ __InstanceDeletionEvent
 
 ## EventSink.h
 ```c++
-#ifndef EVENTSINK_H
-#define EVENTSINK_H
-
-#define _WIN32_DCOM
-#include <iostream>
-using namespace std;
+#pragma once
 #include <comdef.h>
 #include <Wbemidl.h>
 
-#pragma comment(lib, "wbemuuid.lib")
+/*
+    用法：
+        EventSink 的定义和用法，见cpp文件开头
 
+        例如监控共享目录的变化
+        EventSink *pEventSink = new EventSink();
+        Start("SELECT * FROM __InstanceOperationEvent WITHIN 1 WHERE TargetInstance ISA 'Win32_Share'", pEventSink);
+*/
 
-// 启用监控 & 停止监控
-HRESULT BeginMonitor();
-BOOL StopMonitor();
-
-
-#endif    // end of EventSink.h
-```
-
-## EventSink.cpp
-```c++
-#include "stdafx.h"
-#include "EventSink.h"
-
-// 内部类，勿用
+// 这是一个 EventSink 的示例
 class EventSink : public IWbemObjectSink
 {
     LONG m_lRef;
@@ -60,38 +48,58 @@ public:
     EventSink() { m_lRef = 0; }
     ~EventSink() { bDone = true; }
 
-    virtual ULONG STDMETHODCALLTYPE AddRef();
-    virtual ULONG STDMETHODCALLTYPE Release();
-    virtual HRESULT
-        STDMETHODCALLTYPE QueryInterface(REFIID riid, void** ppv);
-
-    virtual HRESULT STDMETHODCALLTYPE Indicate(
-        LONG lObjectCount,
-        IWbemClassObject __RPC_FAR *__RPC_FAR *apObjArray
-    );
-
-    virtual HRESULT STDMETHODCALLTYPE SetStatus(
-        /* [in] */ LONG lFlags,
-        /* [in] */ HRESULT hResult,
-        /* [in] */ BSTR strParam,
-        /* [in] */ IWbemClassObject __RPC_FAR *pObjParam
-    );
+    virtual ULONG   STDMETHODCALLTYPE AddRef();
+    virtual ULONG   STDMETHODCALLTYPE Release();
+    virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, void** ppv);
+    virtual HRESULT STDMETHODCALLTYPE Indicate(LONG lObjectCount,IWbemClassObject __RPC_FAR *__RPC_FAR *apObjArray );
+    virtual HRESULT STDMETHODCALLTYPE SetStatus(LONG lFlags,HRESULT hResult,BSTR strParam,IWbemClassObject __RPC_FAR *pObjParam);
 };
 
-ULONG EventSink::AddRef()
+class CWmiMonitor
+{
+public:
+    CWmiMonitor();
+    ~CWmiMonitor();
+
+public:
+    HRESULT Start(LPCWSTR lpMonitorStr, IUnknown *pEventSink);
+    BOOL Stop();
+
+private:
+    IWbemLocator *              m_pWbemLoc;
+    IWbemServices *             m_pCimSvc;
+    IUnsecuredApartment*        m_pUnsecApp;
+    IUnknown*                   m_pEventSink;
+    IUnknown*                   m_pStubUnk;
+
+    IWbemObjectSink*            m_pSinkInst;
+};
+```
+
+## EventSink.cpp
+```c++
+#include "stdafx.h"
+#include "Win.Wmi.Monitor.h"
+
+#pragma comment(lib, "wbemuuid.lib")
+
+ULONG __stdcall EventSink::AddRef()
 {
     return InterlockedIncrement(&m_lRef);
 }
 
-ULONG EventSink::Release()
+ULONG __stdcall EventSink::Release()
 {
     LONG lRef = InterlockedDecrement(&m_lRef);
     if (lRef == 0)
+    {
         delete this;
+    }
+
     return lRef;
 }
 
-HRESULT EventSink::QueryInterface(REFIID riid, void** ppv)
+HRESULT __stdcall EventSink::QueryInterface(REFIID riid, void** ppv)
 {
     if (riid == IID_IUnknown || riid == IID_IWbemObjectSink)
     {
@@ -99,49 +107,27 @@ HRESULT EventSink::QueryInterface(REFIID riid, void** ppv)
         AddRef();
         return WBEM_S_NO_ERROR;
     }
-    else return E_NOINTERFACE;
+    return E_NOINTERFACE;
 }
 
-
-HRESULT EventSink::Indicate(long lObjectCount,
-    IWbemClassObject **apObjArray)
+HRESULT __stdcall EventSink::Indicate(LONG lObjectCount, IWbemClassObject ** apObjArray)
 {
     HRESULT hres = S_OK;
 
     for (int i = 0; i < lObjectCount; i++)
     {
-        printf("Event occurred\n");
         DWORD dwPropertyCount = 0;
-        DbgTrace(L"[EnumWmiObject] in");
+        ATLTRACE(L"[%s] called", __FUNCTIONW__);
         IWbemClassObject *pObj = apObjArray[i];
         if (pObj)
         {
             VARIANT vCount;
             VariantInit(&vCount);
 
-            if (pObj->Get( L"__PROPERTY_COUNT", 0, &vCount, 0, 0) == S_OK &&
+            if (pObj->Get(L"__PROPERTY_COUNT", 0, &vCount, 0, 0) == S_OK &&
                 vCount.vt == VT_I4)
             {
                 dwPropertyCount = vCount.intVal;
-            }
-
-            VARIANT vInstance;
-            VariantInit(&vInstance);
-
-            if (pObj->Get(L"TargetInstance", 0, &vInstance, 0, 0) == S_OK )
-            {
-                
-                IWbemClassObject * pInstance = (IWbemClassObject*)vInstance.punkVal;
-
-                VARIANT vExecutablePath;
-                VariantInit(&vExecutablePath);
-                if (pInstance->Get(L"ExecutablePath", 0, &vExecutablePath, 0, 0) == S_OK)
-                {
-                    DbgTrace(L"[EnumWmiObject] exe path: %s", vExecutablePath.bstrVal);
-                    VariantClear(&vExecutablePath);
-                }
-
-                VariantClear(&vInstance);
             }
 
             BSTR strObjectName = NULL;
@@ -149,8 +135,8 @@ HRESULT EventSink::Indicate(long lObjectCount,
                 pObj->GetObjectText(0, &strObjectName) == S_OK &&
                 strObjectName)
             {
-                
-                DbgTrace(L"[EnumWmiObject] object text: %s", strObjectName);
+
+                ATLTRACE(L"[%s] object text: %s", __FUNCTIONW__, strObjectName);
                 SysFreeString(strObjectName);
             }
         }
@@ -159,162 +145,179 @@ HRESULT EventSink::Indicate(long lObjectCount,
     return WBEM_S_NO_ERROR;
 }
 
-HRESULT EventSink::SetStatus(
-    /* [in] */ LONG lFlags,
-    /* [in] */ HRESULT hResult,
-    /* [in] */ BSTR strParam,
-    /* [in] */ IWbemClassObject __RPC_FAR *pObjParam
-)
+HRESULT __stdcall EventSink::SetStatus(LONG lFlags, HRESULT hResult, BSTR strParam, IWbemClassObject __RPC_FAR *pObjParam)
 {
     if (lFlags == WBEM_STATUS_COMPLETE)
     {
-        printf("Call complete. hResult = 0x%X\n", hResult);
+        ATLTRACE(L"[%s] Call complete. hResult = 0x%X", __FUNCTIONW__, hResult);
     }
     else if (lFlags == WBEM_STATUS_PROGRESS)
     {
-        printf("Call in progress.\n");
+        ATLTRACE(L"[%s] Call in progress.", __FUNCTIONW__);
     }
 
     return WBEM_S_NO_ERROR;
-}    // end of EventSink.cpp
+}
 
-IWbemLocator *              g_pLoc = NULL;
-IWbemServices *             g_pSvc = NULL;
-IUnsecuredApartment*        g_pUnsecApp = NULL;
-EventSink*                  g_pSink = NULL;
-IUnknown*                   g_pStubUnk = NULL;
-IWbemObjectSink*            g_pStubSink = NULL;
 
-HRESULT BeginMonitor()
+
+CWmiMonitor::CWmiMonitor()
+{
+    m_pWbemLoc = NULL;
+    m_pCimSvc = NULL;
+    m_pUnsecApp = NULL;
+    m_pEventSink = NULL;
+    m_pStubUnk = NULL;
+
+    m_pSinkInst = NULL;
+}
+
+CWmiMonitor::~CWmiMonitor()
+{
+}
+
+HRESULT CWmiMonitor::Start(LPCWSTR lpMonitorStr, IUnknown *pEventSink)
 {
     HRESULT hres = S_FALSE;
+
+    if (pEventSink == NULL)
+    {
+        ATLTRACE(L"[%s] invalid param event sink !!!(0x%08x)!!!", __FUNCTIONW__, hres);
+        return hres;
+    }
 
     hres = CoInitializeEx(0, COINIT_MULTITHREADED);
     if (FAILED(hres))
     {
+        ATLTRACE(L"[%s]co init failed(0x%08x)!!!", __FUNCTIONW__, hres);
         return hres;
     }
 
     do
     {
-        hres = CoInitializeSecurity(
-            NULL,
-            -1,                          // COM negotiates service
-            NULL,                        // Authentication services
-            NULL,                        // Reserved
-            RPC_C_AUTHN_LEVEL_DEFAULT,   // Default authentication 
-            RPC_C_IMP_LEVEL_IMPERSONATE, // Default Impersonation  
-            NULL,                        // Authentication info
-            EOAC_NONE,                   // Additional capabilities 
-            NULL                         // Reserved
-        );
+        hres = CoInitializeSecurity( NULL, -1, NULL, NULL, RPC_C_AUTHN_LEVEL_DEFAULT, RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE, NULL );
         if (FAILED(hres))
         {
+            ATLTRACE(L"[%s] CoInitializeSecurity failed(0x%08x)!!!", __FUNCTIONW__, hres);
             break;
         }
 
-        hres = CoCreateInstance( CLSID_WbemLocator, 0, CLSCTX_INPROC_SERVER, IID_IWbemLocator, (LPVOID *)&g_pLoc);
+        hres = CoCreateInstance(CLSID_WbemLocator, 0, CLSCTX_INPROC_SERVER, IID_IWbemLocator, (LPVOID *)&m_pWbemLoc);
         if (FAILED(hres))
         {
+            ATLTRACE(L"[%s] CLSID_WbemLocator failed(0x%08x)!!!", __FUNCTIONW__, hres);
             break;
         }
 
-        hres = g_pLoc->ConnectServer( _bstr_t(L"ROOT\\CIMV2"), NULL, NULL, 0, NULL, 0, 0, &g_pSvc);
+        hres = m_pWbemLoc->ConnectServer(_bstr_t(L"ROOT\\CIMV2"), NULL, NULL, 0, NULL, 0, 0, &m_pCimSvc);
         if (FAILED(hres))
         {
+            ATLTRACE(L"[%s] root cimv2 failed(0x%08x)!!!", __FUNCTIONW__, hres);
             break;
         }
 
-        hres = CoSetProxyBlanket(
-            g_pSvc,                        // Indicates the proxy to set
-            RPC_C_AUTHN_WINNT,           // RPC_C_AUTHN_xxx 
-            RPC_C_AUTHZ_NONE,            // RPC_C_AUTHZ_xxx 
-            NULL,                        // Server principal name 
-            RPC_C_AUTHN_LEVEL_CALL,      // RPC_C_AUTHN_LEVEL_xxx 
-            RPC_C_IMP_LEVEL_IMPERSONATE, // RPC_C_IMP_LEVEL_xxx
-            NULL,                        // client identity
-            EOAC_NONE                    // proxy capabilities 
-        );
+        hres = CoSetProxyBlanket( m_pCimSvc, RPC_C_AUTHN_WINNT, RPC_C_AUTHZ_NONE, NULL, RPC_C_AUTHN_LEVEL_CALL, RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE );
         if (FAILED(hres))
         {
+            ATLTRACE(L"[%s] CoSetProxyBlanket failed(0x%08x)!!!", __FUNCTIONW__, hres);
             break;
         }
 
-        
 
-        hres = CoCreateInstance(CLSID_UnsecuredApartment, NULL,
-            CLSCTX_LOCAL_SERVER, IID_IUnsecuredApartment,
-            (void**)&g_pUnsecApp);
+        hres = CoCreateInstance(CLSID_UnsecuredApartment, NULL, CLSCTX_LOCAL_SERVER, IID_IUnsecuredApartment, (void**)&m_pUnsecApp);
+        if (FAILED(hres))
+        {
+            ATLTRACE(L"[%s] CLSID_UnsecuredApartment failed(0x%08x)!!!", __FUNCTIONW__, hres);
+            break;
+        }
 
-        g_pSink = new EventSink;
-        g_pSink->AddRef();
+        m_pEventSink = pEventSink;
+        m_pEventSink->AddRef();
 
-        g_pUnsecApp->CreateObjectStub(g_pSink, &g_pStubUnk);
+        hres = m_pUnsecApp->CreateObjectStub(m_pEventSink, &m_pStubUnk);
+        if (FAILED(hres))
+        {
+            ATLTRACE(L"[%s] m_pStubUnk failed(0x%08x)!!!", __FUNCTIONW__, hres);
+            break;
+        }
 
-        g_pStubUnk->QueryInterface(IID_IWbemObjectSink, (void **)&g_pStubSink);
+        hres = m_pStubUnk->QueryInterface(IID_IWbemObjectSink, (void **)&m_pSinkInst);
+        if (FAILED(hres))
+        {
+            ATLTRACE(L"[%s] IID_IWbemObjectSink failed(0x%08x)!!!", __FUNCTIONW__, hres);
+            break;
+        }
 
-        hres = g_pSvc->ExecNotificationQueryAsync(
+        // query string sample "SELECT * FROM __InstanceOperationEvent WITHIN 1 WHERE TargetInstance ISA 'Win32_Share'"
+        hres = m_pCimSvc->ExecNotificationQueryAsync(
             _bstr_t("WQL"),
-            _bstr_t("SELECT * FROM __InstanceCreationEvent WITHIN 1 WHERE TargetInstance ISA 'Win32_Process'"),
+            _bstr_t(lpMonitorStr),
             WBEM_FLAG_SEND_STATUS,
             NULL,
-            g_pStubSink);
+            m_pSinkInst);
         if (FAILED(hres))
         {
+            ATLTRACE(L"[%s] ExecNotificationQueryAsync failed(0x%08x)!!!", __FUNCTIONW__, hres);
             break;
         }
 
+        ATLTRACE(L"[%s] monitor [%s] success", __FUNCTIONW__, lpMonitorStr);
+        return hres;
     } while (FALSE);
 
+    Stop();
     return hres;
 }
 
-BOOL StopMonitor()
+BOOL CWmiMonitor::Stop()
 {
-    if (g_pStubSink && g_pSvc)
+    if (m_pSinkInst && m_pCimSvc)
     {
-        g_pSvc->CancelAsyncCall(g_pStubSink);
-        g_pSvc->Release();
+        m_pCimSvc->CancelAsyncCall(m_pSinkInst);
+        m_pCimSvc->Release();
     }
-    if (g_pLoc)
+    if (m_pWbemLoc)
     {
-        g_pLoc->Release();
-    }
-    
-    if (g_pUnsecApp)
-    {
-        g_pUnsecApp->Release();
-    }
-    
-    if (g_pStubUnk)
-    {
-        g_pStubUnk->Release();
+        m_pWbemLoc->Release();
     }
 
-    if (g_pSink)
+    if (m_pUnsecApp)
     {
-        g_pSink->Release();
+        m_pUnsecApp->Release();
     }
-    
-    if (g_pStubSink)
+
+    if (m_pStubUnk)
     {
-        g_pStubSink->Release();
+        m_pStubUnk->Release();
+    }
+
+    if (m_pEventSink)
+    {
+        m_pEventSink->Release();
+    }
+
+    if (m_pSinkInst)
+    {
+        m_pSinkInst->Release();
     }
 
     CoUninitialize();
+
     return TRUE;
 }
+
 ```
 
 ## 用法
 ```c++
 int main()
 {
-    BeginMonitor();
+    EventSink *pEventSink = new EventSink();
+    CWmiMonitor m_shareMonitor;
+    m_shareMonitor.Start("SELECT * FROM __InstanceOperationEvent WITHIN 1 WHERE TargetInstance ISA 'Win32_Share'", pEventSink);
  
     system("pause");
-
-    StopMonitor();
+    m_shareMonitor.Stop();
     return 0;
 }
 ```
