@@ -41,17 +41,17 @@ https://bbs.kanxue.com/thread-270893.htm
 ```bat
 Your environment has been set up for using Node.js 18.16.1 (x64) and npm.
 
-C:\Users\tgjarwl>node -v
+C:\Users\xxxx>node -v
 v18.16.1
 
-C:\Users\tgjarwl>npm -v
+C:\Users\xxxx>npm -v
 9.5.1
 
-C:\Users\tgjarwl>cd E:\project\tuitui
+C:\Users\xxxx>cd E:\project\tt
 
-C:\Users\tgjarwl>e:
+C:\Users\xxxx>e:
 
-E:\project\tuitui>npm install asar -g
+E:\project\tt>npm install asar -g
 npm WARN deprecated asar@3.2.0: Please use @electron/asar moving forward.  There is no API change, just a package name change
 
 added 17 packages in 16s
