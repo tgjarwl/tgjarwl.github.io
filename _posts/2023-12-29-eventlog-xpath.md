@@ -107,7 +107,7 @@ win7以上的系统日志，支持筛选， 格式遵循 XPath 语法。 下面�
 ```
 <Select Path="Security">*[System[(EventID=4624) and TimeCreated[@SystemTime&gt;='2023-12-28T02:07:50.000Z' and timediff(@SystemTime) &lt;= 3600000]]]</Select>
 ```
-筛选完 System节点，来个进阶的，筛选 EventData 节点。例如 ：  4624 日志中的 <Data Name="TargetUserName">SYSTEM</Data> 包含这句话的日志 该怎么筛选出来呢
+筛选完 System节点，来个进阶的，筛选 EventData 节点。例如 ：  4624 日志中包含这句话的日志（<Data Name="TargetUserName">SYSTEM</Data>）
 ```
 <Select Path="Security">*[System[(EventID=4624)] and EventData[Data[@Name='TargetUserName']='SYSTEM']]</Select>
 ```
