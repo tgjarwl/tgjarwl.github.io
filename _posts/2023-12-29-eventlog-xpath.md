@@ -109,6 +109,11 @@ win7以上的系统日志，支持筛选， 格式遵循 XPath 语法。 下面�
 ```
 筛选完 System节点，来个进阶的，筛选 EventData 节点。例如 ：  4624 日志中的 <Data Name="TargetUserName">SYSTEM</Data> 包含这句话的日志 该怎么筛选出来呢
 ```
-<Select Path="Security">*[System[(EventID=4624)] and EventData[Data[@Name='TargetUserName'] and Data='SYSTEM']]</Select>
+<Select Path="Security">*[System[(EventID=4624)] and EventData[Data[@Name='TargetUserName']='SYSTEM']]</Select>
 ```
+这个地方要重点说一下， 如果是想筛选 Data是'SYSTEM' 的数据，只需要写 Data='SYSTEM'
+如果还要带上属性，就比如上面的例子 Data 节点中 Name属性是 'TargetUserName' 的节点的值是 'SYSTEM'。则只需要在原有基础上带上属性描述信息[@Name='TargetUserName']。
+所以完整的例子句子就是 ： Data[@Name='TargetUserName']='SYSTEM'
+
+
 参照上述说的语法，只需要简单拼接后，就可以实现只有组合了。
