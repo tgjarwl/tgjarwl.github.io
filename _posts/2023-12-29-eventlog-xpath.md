@@ -18,7 +18,9 @@ win7以上的系统日志，支持筛选， 格式遵循 XPath 语法。 下面�
 </QueryList>
 ```
 
-这是最基本的语法， QueryList 下面的Query子项会有Path路径，表示要查询到的 日志文件 这里是 Securiry 日志。整个查询的核心操作都是要围绕 这一句展开
+这是最基本的语法， QueryList 下面的Query子项会有Path路径，表示要查询到的日志文件, 这里是 Securiry 日志。
+
+整个查询的核心操作都是要围绕下面这一句展开
 ```
 <Select Path="Security">*</Select>
 ```
