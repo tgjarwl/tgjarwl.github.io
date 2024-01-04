@@ -118,4 +118,14 @@ win7以上的系统日志，支持筛选， 格式遵循 XPath 语法。 下面�
 所以完整的句子就是 ： Data[@Name='TargetUserName']='SYSTEM'
 
 
+如果想要一次筛选多个不同的路径的日志，则可以这么写
+```
+<QueryList>
+<Query Id='0'>
+	<Select Path='System'>*[System[(EventID=7045)]]</Select>
+	<Select Path='Security'>*[System[(EventID=4624)]]</Select>
+</Query>
+</QueryList>
+```
+
 参照上述说的语法，只需要简单拼接后，就可以实现只有组合了。
