@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 快速定位加密的Sqlite数据库密码
+title: 解密Sqlite数据库
 date: 2024-06-06
 tags: 逆向开发
 ---
