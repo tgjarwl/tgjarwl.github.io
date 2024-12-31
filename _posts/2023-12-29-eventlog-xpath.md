@@ -128,4 +128,15 @@ win7以上的系统日志，支持筛选， 格式遵循 XPath 语法。 下面�
 </QueryList>
 ```
 
+又或者想筛选多个事件，其中一个事件除了命中ID外，还需要命中ProviderName
+```
+<QueryList>
+<Query Id='0'>
+	<Select Path='System'>*[System[(EventID=7045) or (EventID=1000 and Provider[@Name='Application Error'])]]</Select>
+	<Select Path='Security'>*[System[(EventID=4624)]]</Select>
+</Query>
+</QueryList>
+
+```
+
 参照上述说的语法，只需要简单拼接后，就可以实现只有组合了。
