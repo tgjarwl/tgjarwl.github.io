@@ -9,6 +9,7 @@ title: 工具
     <button class="tools-tab" onclick="switchTab(this,'url')">URL</button>
     <button class="tools-tab" onclick="switchTab(this,'hex')">Hex</button>
     <button class="tools-tab" onclick="switchTab(this,'ts')">时间戳</button>
+    <button class="tools-tab" onclick="switchTab(this,'json')">JSON</button>
   </div>
 
   <!-- Base64 -->
@@ -95,6 +96,25 @@ title: 工具
       <div class="tool-field">
         <label>日期时间</label>
         <input type="text" id="ts-output" class="tool-input" placeholder="如 2023-11-15 06:13:20">
+      </div>
+    </div>
+  </div>
+
+  <!-- JSON -->
+  <div id="tab-json" class="tools-panel">
+    <div class="tool-row">
+      <div class="tool-field">
+        <label>输入</label>
+        <textarea id="json-input" class="tool-textarea" placeholder='输入 JSON 字符串，如 {"name":"test","value":123}'></textarea>
+      </div>
+      <div class="tool-buttons">
+        <button class="tool-btn" onclick="jsonFormat()">格式化 &darr;</button>
+        <button class="tool-btn" onclick="jsonCompress()">压缩 &darr;</button>
+        <button class="tool-btn tool-btn-secondary" onclick="clearFields('json-input','json-output')">清空</button>
+      </div>
+      <div class="tool-field">
+        <label>输出</label>
+        <textarea id="json-output" class="tool-textarea" placeholder="输出结果" readonly></textarea>
       </div>
     </div>
   </div>
@@ -252,5 +272,27 @@ function formatDate(d) {
   var pad = function(n) { return n < 10 ? '0' + n : n; };
   return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) +
     ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+}
+
+// JSON
+function jsonFormat() {
+  var input = document.getElementById('json-input').value.trim();
+  if (!input) { document.getElementById('json-output').value = ''; return; }
+  try {
+    var obj = JSON.parse(input);
+    document.getElementById('json-output').value = JSON.stringify(obj, null, 2);
+  } catch(e) {
+    document.getElementById('json-output').value = '解析错误: ' + e.message;
+  }
+}
+function jsonCompress() {
+  var input = document.getElementById('json-input').value.trim();
+  if (!input) { document.getElementById('json-output').value = ''; return; }
+  try {
+    var obj = JSON.parse(input);
+    document.getElementById('json-output').value = JSON.stringify(obj);
+  } catch(e) {
+    document.getElementById('json-output').value = '解析错误: ' + e.message;
+  }
 }
 </script>
