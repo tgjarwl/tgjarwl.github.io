@@ -1421,3 +1421,92 @@ nav a {
   transform: translateY(-3px);
 }
 /*导航按钮-end*/
+
+/*工具页-start*/
+.tools-container {
+  max-width: 700px;
+}
+.tool-section {
+  margin-bottom: 35px;
+}
+.tool-section h3 {
+  font-size: 1.1em;
+}
+.tool-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.tool-textarea {
+  width: 95%;
+  min-height: 80px;
+  padding: 10px;
+  border: 1px solid #c9e1f6;
+  border-radius: 4px;
+  background: #e8f2fb;
+  font-family: Consolas, Menlo, Monaco, monospace;
+  font-size: 0.9em;
+  resize: vertical;
+  box-sizing: border-box;
+}
+.tool-textarea:focus {
+  outline: none;
+  border-color: #5BA4E5;
+}
+.tool-buttons {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.tool-btn {
+  padding: 6px 14px;
+  border: 1px solid #1874CD;
+  border-radius: 4px;
+  background: #fff;
+  color: #1874CD;
+  font-size: 0.85em;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.tool-btn:hover {
+  background: #1874CD;
+  color: #fff;
+}
+.tool-btn-secondary {
+  border-color: #999;
+  color: #666;
+}
+.tool-btn-secondary:hover {
+  background: #666;
+  color: #fff;
+  border-color: #666;
+}
+.tool-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.tool-field label {
+  font-size: 0.8em;
+  color: #888;
+}
+.tool-input {
+  width: 95%;
+  padding: 8px 10px;
+  border: 1px solid #c9e1f6;
+  border-radius: 4px;
+  background: #e8f2fb;
+  font-family: Consolas, Menlo, Monaco, monospace;
+  font-size: 0.9em;
+  box-sizing: border-box;
+}
+.tool-input:focus {
+  outline: none;
+  border-color: #5BA4E5;
+}
+@media all and (max-width: 600px) {
+  .tool-textarea, .tool-input {
+    width: 100%;
+  }
+}
+/*工具页-end*/

@@ -1,0 +1,183 @@
+---
+layout: page
+title: 工具
+---
+
+<div class="tools-container">
+
+  <!-- Base64 -->
+  <div class="tool-section">
+    <h3>Base64 编解码</h3>
+    <div class="tool-row">
+      <textarea id="b64-input" class="tool-textarea" placeholder="输入文本或 Base64 字符串"></textarea>
+      <div class="tool-buttons">
+        <button class="tool-btn" onclick="b64Encode()">编码 &darr;</button>
+        <button class="tool-btn" onclick="b64Decode()">解码 &uarr;</button>
+        <button class="tool-btn tool-btn-secondary" onclick="b64Swap()">交换 &#8644;</button>
+      </div>
+      <textarea id="b64-output" class="tool-textarea" placeholder="输出结果" readonly></textarea>
+    </div>
+  </div>
+
+  <!-- URL -->
+  <div class="tool-section">
+    <h3>URL 编解码</h3>
+    <div class="tool-row">
+      <textarea id="url-input" class="tool-textarea" placeholder="输入文本或 URL 编码字符串"></textarea>
+      <div class="tool-buttons">
+        <button class="tool-btn" onclick="urlEncode()">编码 &darr;</button>
+        <button class="tool-btn" onclick="urlDecode()">解码 &uarr;</button>
+        <button class="tool-btn tool-btn-secondary" onclick="urlSwap()">交换 &#8644;</button>
+      </div>
+      <div class="tool-buttons" style="margin-top:6px">
+        <button class="tool-btn tool-btn-secondary" onclick="urlEncodeComponent()">encodeURIComponent &darr;</button>
+        <button class="tool-btn tool-btn-secondary" onclick="urlDecodeComponent()">decodeURIComponent &uarr;</button>
+      </div>
+      <textarea id="url-output" class="tool-textarea" placeholder="输出结果" readonly></textarea>
+    </div>
+  </div>
+
+  <!-- Hex -->
+  <div class="tool-section">
+    <h3>Hex / ASCII 转换</h3>
+    <div class="tool-row">
+      <textarea id="hex-input" class="tool-textarea" placeholder="输入文本或 Hex 字符串 (如 48 65 6C 6C 6F)"></textarea>
+      <div class="tool-buttons">
+        <button class="tool-btn" onclick="hexEncode()">文本 &rarr; Hex &darr;</button>
+        <button class="tool-btn" onclick="hexDecode()">Hex &rarr; 文本 &uarr;</button>
+        <button class="tool-btn tool-btn-secondary" onclick="hexSwap()">交换 &#8644;</button>
+      </div>
+      <textarea id="hex-output" class="tool-textarea" placeholder="输出结果" readonly></textarea>
+    </div>
+  </div>
+
+  <!-- Timestamp -->
+  <div class="tool-section">
+    <h3>时间戳转换</h3>
+    <div class="tool-row">
+      <div class="tool-field">
+        <label>Unix 时间戳 (秒)</label>
+        <input type="text" id="ts-input" class="tool-input" placeholder="如 1700000000">
+      </div>
+      <div class="tool-buttons">
+        <button class="tool-btn" onclick="tsToDate()">时间戳 &rarr; 日期 &darr;</button>
+        <button class="tool-btn" onclick="dateToTs()">日期 &rarr; 时间戳 &uarr;</button>
+        <button class="tool-btn tool-btn-secondary" onclick="tsNow()">当前时间戳</button>
+      </div>
+      <div class="tool-field">
+        <label>日期时间 (UTC+8)</label>
+        <input type="text" id="ts-output" class="tool-input" placeholder="如 2023-11-15 06:13:20">
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// Base64
+function b64Encode() {
+  var input = document.getElementById('b64-input').value;
+  try {
+    document.getElementById('b64-output').value = btoa(unescape(encodeURIComponent(input)));
+  } catch(e) {
+    document.getElementById('b64-output').value = '编码错误: ' + e.message;
+  }
+}
+function b64Decode() {
+  var input = document.getElementById('b64-input').value;
+  try {
+    document.getElementById('b64-output').value = decodeURIComponent(escape(atob(input)));
+  } catch(e) {
+    document.getElementById('b64-output').value = '解码错误: 无效的 Base64 字符串';
+  }
+}
+function b64Swap() {
+  var a = document.getElementById('b64-input'), b = document.getElementById('b64-output');
+  var tmp = a.value; a.value = b.value; b.value = '';
+}
+
+// URL
+function urlEncode() {
+  document.getElementById('url-output').value = encodeURI(document.getElementById('url-input').value);
+}
+function urlDecode() {
+  try {
+    document.getElementById('url-output').value = decodeURI(document.getElementById('url-input').value);
+  } catch(e) {
+    document.getElementById('url-output').value = '解码错误: ' + e.message;
+  }
+}
+function urlEncodeComponent() {
+  document.getElementById('url-output').value = encodeURIComponent(document.getElementById('url-input').value);
+}
+function urlDecodeComponent() {
+  try {
+    document.getElementById('url-output').value = decodeURIComponent(document.getElementById('url-input').value);
+  } catch(e) {
+    document.getElementById('url-output').value = '解码错误: ' + e.message;
+  }
+}
+function urlSwap() {
+  var a = document.getElementById('url-input'), b = document.getElementById('url-output');
+  var tmp = a.value; a.value = b.value; b.value = '';
+}
+
+// Hex
+function hexEncode() {
+  var input = document.getElementById('hex-input').value;
+  var hex = [];
+  for (var i = 0; i < input.length; i++) {
+    hex.push(input.charCodeAt(i).toString(16).toUpperCase().padStart(2, '0'));
+  }
+  document.getElementById('hex-output').value = hex.join(' ');
+}
+function hexDecode() {
+  var input = document.getElementById('hex-input').value.replace(/[^0-9a-fA-F]/g, '');
+  if (input.length % 2 !== 0) {
+    document.getElementById('hex-output').value = '解码错误: Hex 字符串长度必须为偶数';
+    return;
+  }
+  var str = '';
+  for (var i = 0; i < input.length; i += 2) {
+    str += String.fromCharCode(parseInt(input.substr(i, 2), 16));
+  }
+  try {
+    document.getElementById('hex-output').value = decodeURIComponent(escape(str));
+  } catch(e) {
+    document.getElementById('hex-output').value = str;
+  }
+}
+function hexSwap() {
+  var a = document.getElementById('hex-input'), b = document.getElementById('hex-output');
+  var tmp = a.value; a.value = b.value; b.value = '';
+}
+
+// Timestamp
+function tsToDate() {
+  var ts = parseInt(document.getElementById('ts-input').value.trim());
+  if (isNaN(ts)) {
+    document.getElementById('ts-output').value = '请输入有效的时间戳';
+    return;
+  }
+  if (ts > 1e12) ts = Math.floor(ts / 1000); // ms -> s
+  var d = new Date(ts * 1000);
+  document.getElementById('ts-output').value = formatDate(d);
+}
+function dateToTs() {
+  var dateStr = document.getElementById('ts-output').value.trim();
+  var d = new Date(dateStr);
+  if (isNaN(d.getTime())) {
+    document.getElementById('ts-input').value = '请输入有效的日期 (如 2023-11-15 06:13:20)';
+    return;
+  }
+  document.getElementById('ts-input').value = Math.floor(d.getTime() / 1000);
+}
+function tsNow() {
+  document.getElementById('ts-input').value = Math.floor(Date.now() / 1000);
+}
+function formatDate(d) {
+  var pad = function(n) { return n < 10 ? '0' + n : n; };
+  return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) +
+    ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+}
+</script>
