@@ -173,16 +173,41 @@ function hexToBytes(hex) {
   }
   return bytes;
 }
-function hexEncode() {
-  var input = document.getElementById('hex-input').value;
-  var bytes = new TextEncoder().encode(input);
+function bytesToHex(bytes) {
   var hex = [];
   for (var i = 0; i < bytes.length; i++) {
     hex.push(bytes[i].toString(16).toUpperCase().padStart(2, '0'));
   }
-  document.getElementById('hex-out-unicode').value = '';
-  document.getElementById('hex-out-acp').value = '';
-  document.getElementById('hex-out-utf8').value = hex.join(' ');
+  return hex.join(' ');
+}
+function textToUtf16LE(str) {
+  var bytes = [];
+  for (var i = 0; i < str.length; i++) {
+    var code = str.charCodeAt(i);
+    bytes.push(code & 0xFF);
+    bytes.push((code >> 8) & 0xFF);
+  }
+  return new Uint8Array(bytes);
+}
+function hexEncode() {
+  var input = document.getElementById('hex-input').value;
+  if (!input) {
+    document.getElementById('hex-out-unicode').value = '';
+    document.getElementById('hex-out-acp').value = '';
+    document.getElementById('hex-out-utf8').value = '';
+    return;
+  }
+  // UTF-8
+  document.getElementById('hex-out-utf8').value = bytesToHex(new TextEncoder().encode(input));
+  // UTF-16LE
+  document.getElementById('hex-out-unicode').value = bytesToHex(textToUtf16LE(input));
+  // GBK: 浏览器 TextEncoder 不支持 GBK，用 TextDecoder 反查
+  try {
+    var gbkEncoder = new TextEncoder('gbk');
+    document.getElementById('hex-out-acp').value = bytesToHex(gbkEncoder.encode(input));
+  } catch(e) {
+    document.getElementById('hex-out-acp').value = '浏览器不支持 GBK 编码输出';
+  }
 }
 function hexDecode() {
   var bytes = hexToBytes(document.getElementById('hex-input').value);
