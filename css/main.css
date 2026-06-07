@@ -1470,7 +1470,7 @@ nav a {
 }
 .tool-textarea {
   width: 95%;
-  min-height: calc((100vh - 300px) / 2);
+  min-height: 160px;
   padding: 10px;
   border: 1px solid #c9e1f6;
   border-radius: 4px;
@@ -1488,6 +1488,9 @@ nav a {
   width: 95%;
   min-height: calc(100vh - 300px);
   resize: vertical;
+}
+.tool-textarea--half {
+  min-height: calc((100vh - 300px) / 2);
 }
 .tool-buttons {
   display: flex;
