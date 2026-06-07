@@ -62,13 +62,20 @@ title: 工具
       </div>
       <div class="tool-buttons">
         <button class="tool-btn" onclick="hexEncode()">文本 &rarr; Hex &darr;</button>
-        <button class="tool-btn" onclick="hexDecode()">Hex &rarr; 文本 &uarr;</button>
-        <button class="tool-btn tool-btn-secondary" onclick="hexSwap()">交换 &#8644;</button>
-        <button class="tool-btn tool-btn-secondary" onclick="clearFields('hex-input','hex-output')">清空</button>
+        <button class="tool-btn" onclick="hexDecode()">Hex &rarr; 三种编码 &uarr;</button>
+        <button class="tool-btn tool-btn-secondary" onclick="clearFields('hex-input','hex-out-unicode','hex-out-acp','hex-out-utf8')">清空</button>
       </div>
       <div class="tool-field">
-        <label>输出</label>
-        <textarea id="hex-output" class="tool-textarea" placeholder="输出结果" readonly></textarea>
+        <label>Unicode (UTF-16LE)</label>
+        <textarea id="hex-out-unicode" class="tool-textarea" placeholder="按 UTF-16LE 解码" readonly></textarea>
+      </div>
+      <div class="tool-field">
+        <label>ACP (GBK)</label>
+        <textarea id="hex-out-acp" class="tool-textarea" placeholder="按 GBK 解码" readonly></textarea>
+      </div>
+      <div class="tool-field">
+        <label>UTF-8</label>
+        <textarea id="hex-out-utf8" class="tool-textarea" placeholder="按 UTF-8 解码" readonly></textarea>
       </div>
     </div>
   </div>
@@ -157,33 +164,40 @@ function urlSwap() {
 }
 
 // Hex
+function hexToBytes(hex) {
+  var cleaned = hex.replace(/[^0-9a-fA-F]/g, '');
+  if (cleaned.length % 2 !== 0) return null;
+  var bytes = new Uint8Array(cleaned.length / 2);
+  for (var i = 0; i < cleaned.length; i += 2) {
+    bytes[i / 2] = parseInt(cleaned.substr(i, 2), 16);
+  }
+  return bytes;
+}
 function hexEncode() {
   var input = document.getElementById('hex-input').value;
+  var bytes = new TextEncoder().encode(input);
   var hex = [];
-  for (var i = 0; i < input.length; i++) {
-    hex.push(input.charCodeAt(i).toString(16).toUpperCase().padStart(2, '0'));
+  for (var i = 0; i < bytes.length; i++) {
+    hex.push(bytes[i].toString(16).toUpperCase().padStart(2, '0'));
   }
-  document.getElementById('hex-output').value = hex.join(' ');
+  document.getElementById('hex-out-unicode').value = '';
+  document.getElementById('hex-out-acp').value = '';
+  document.getElementById('hex-out-utf8').value = hex.join(' ');
 }
 function hexDecode() {
-  var input = document.getElementById('hex-input').value.replace(/[^0-9a-fA-F]/g, '');
-  if (input.length % 2 !== 0) {
-    document.getElementById('hex-output').value = '解码错误: Hex 字符串长度必须为偶数';
+  var bytes = hexToBytes(document.getElementById('hex-input').value);
+  if (!bytes) {
+    document.getElementById('hex-out-unicode').value = 'Hex 长度必须为偶数';
+    document.getElementById('hex-out-acp').value = '';
+    document.getElementById('hex-out-utf8').value = '';
     return;
   }
-  var str = '';
-  for (var i = 0; i < input.length; i += 2) {
-    str += String.fromCharCode(parseInt(input.substr(i, 2), 16));
-  }
-  try {
-    document.getElementById('hex-output').value = decodeURIComponent(escape(str));
-  } catch(e) {
-    document.getElementById('hex-output').value = str;
-  }
-}
-function hexSwap() {
-  var a = document.getElementById('hex-input'), b = document.getElementById('hex-output');
-  var tmp = a.value; a.value = b.value; b.value = '';
+  try { document.getElementById('hex-out-unicode').value = new TextDecoder('utf-16le').decode(bytes); }
+  catch(e) { document.getElementById('hex-out-unicode').value = '解码失败'; }
+  try { document.getElementById('hex-out-acp').value = new TextDecoder('gbk').decode(bytes); }
+  catch(e) { document.getElementById('hex-out-acp').value = '解码失败'; }
+  try { document.getElementById('hex-out-utf8').value = new TextDecoder('utf-8').decode(bytes); }
+  catch(e) { document.getElementById('hex-out-utf8').value = '解码失败'; }
 }
 
 // Timestamp
