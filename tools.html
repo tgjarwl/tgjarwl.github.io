@@ -103,18 +103,11 @@ title: 工具
   <!-- JSON -->
   <div id="tab-json" class="tools-panel">
     <div class="tool-row">
-      <div class="tool-field">
-        <label>输入</label>
-        <textarea id="json-input" class="tool-textarea" placeholder='输入 JSON 字符串，如 {"name":"test","value":123}'></textarea>
-      </div>
+      <textarea id="json-input" class="tool-textarea" placeholder='输入 JSON 字符串，如 {"name":"test","value":123}'></textarea>
       <div class="tool-buttons">
-        <button class="tool-btn" onclick="jsonFormat()">格式化 &darr;</button>
-        <button class="tool-btn" onclick="jsonCompress()">压缩 &darr;</button>
-        <button class="tool-btn tool-btn-secondary" onclick="clearFields('json-input','json-output')">清空</button>
-      </div>
-      <div class="tool-field">
-        <label>输出</label>
-        <textarea id="json-output" class="tool-textarea" placeholder="输出结果" readonly></textarea>
+        <button class="tool-btn" onclick="jsonFormat()">格式化</button>
+        <button class="tool-btn" onclick="jsonCompress()">压缩</button>
+        <button class="tool-btn tool-btn-secondary" onclick="clearFields('json-input')">清空</button>
       </div>
     </div>
   </div>
@@ -276,23 +269,21 @@ function formatDate(d) {
 
 // JSON
 function jsonFormat() {
-  var input = document.getElementById('json-input').value.trim();
-  if (!input) { document.getElementById('json-output').value = ''; return; }
+  var el = document.getElementById('json-input');
+  if (!el.value.trim()) return;
   try {
-    var obj = JSON.parse(input);
-    document.getElementById('json-output').value = JSON.stringify(obj, null, 2);
+    el.value = JSON.stringify(JSON.parse(el.value), null, 2);
   } catch(e) {
-    document.getElementById('json-output').value = '解析错误: ' + e.message;
+    alert('解析错误: ' + e.message);
   }
 }
 function jsonCompress() {
-  var input = document.getElementById('json-input').value.trim();
-  if (!input) { document.getElementById('json-output').value = ''; return; }
+  var el = document.getElementById('json-input');
+  if (!el.value.trim()) return;
   try {
-    var obj = JSON.parse(input);
-    document.getElementById('json-output').value = JSON.stringify(obj);
+    el.value = JSON.stringify(JSON.parse(el.value));
   } catch(e) {
-    document.getElementById('json-output').value = '解析错误: ' + e.message;
+    alert('解析错误: ' + e.message);
   }
 }
 </script>
