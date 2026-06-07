@@ -1,13 +1,13 @@
 <section class="footer">
     <footer>
-        <div class = "footer_div">  
+        <div class = "footer_div">
         <nav class="cover-navigation navigation--social">
           <ul class="navigation">
 
           {% if site.social.weibo %}
           <!-- Weibo -->
           <li class="navigation__item_social">
-            <a href="http://weibo.com/{{site.social.weibo}}" title="@{{site.social.weibo}} 的微博" target="_blank">
+            <a href="https://weibo.com/{{site.social.weibo}}" title="@{{site.social.weibo}} 的微博" target="_blank">
               <i class='social fa fa-weibo fa-2x'></i>
               <span class="label">Weibo</span>
             </a>
@@ -23,11 +23,11 @@
             </a>
           </li>
           {% endif %}
-          
+
           {% if site.social.twitter %}
           <!-- Twitter -->
           <li class="navigation__item_social">
-            <a href="http://twitter.com/{{site.social.twitter}}" title="@{{site.social.twitter}}" target="_blank">
+            <a href="https://twitter.com/{{site.social.twitter}}" title="@{{site.social.twitter}}" target="_blank">
               <i class='social fa fa-twitter fa-2x'></i>
               <span class="label">Twitter</span>
             </a>
@@ -67,7 +67,7 @@
 
         </div>
 
-        <div class = "footer_div">  
+        <div class = "footer_div">
            <p class="copyright text-muted">
             Copyright &copy; {{ site.title }} {{ site.time | date: '%Y' }} Theme by <a href="https://tgjarwl.github.io">tgjarwl</a> |
             <iframe
@@ -77,8 +77,6 @@
             </iframe>
             </p>
         	<div align="right">
-    			<link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.3.0/css/font-awesome.min.css">
-
           <!-- 访问统计 -->
           总浏览次数<span id="busuanzi_value_site_pv"></span>,
 总访问用户数<span id="busuanzi_value_site_uv"></span>,
@@ -88,5 +86,4 @@
         <div>
     </footer>
 </section>
-<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
-</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>

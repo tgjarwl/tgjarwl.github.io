@@ -1,33 +1,39 @@
-$(document).ready(function() {
-
-
-  $('a.blog-button').click(function() {
-    // If already in blog, return early without animate overlay panel again.
-    if (location.hash && location.hash == "#blog") return;
-    if ($('.panel-cover').hasClass('panel-cover--collapsed')) return;
-    $('.main-post-list').removeClass('hidden');
-    currentWidth = $('.panel-cover').width();
-    if (currentWidth < 2000) {
-      $('.panel-cover').addClass('panel-cover--collapsed');
-    } else {
-      $('.panel-cover').css('max-width',currentWidth);
-      $('.panel-cover').animate({'max-width': '320px', 'width': '22%'}, 400, swing = 'swing', function() {} );
-    }
-
-    
+document.addEventListener('DOMContentLoaded', function() {
+  var blogButtons = document.querySelectorAll('a.blog-button');
+  blogButtons.forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      if (location.hash && location.hash === '#blog') return;
+      var panel = document.querySelector('.panel-cover');
+      if (panel.classList.contains('panel-cover--collapsed')) return;
+      document.querySelector('.main-post-list').classList.remove('hidden');
+      var currentWidth = panel.offsetWidth;
+      if (currentWidth < 2000) {
+        panel.classList.add('panel-cover--collapsed');
+      } else {
+        panel.style.maxWidth = currentWidth + 'px';
+        panel.style.width = '22%';
+        var start = currentWidth;
+        var end = 320;
+        var duration = 400;
+        var startTime = null;
+        function animate(timestamp) {
+          if (!startTime) startTime = timestamp;
+          var progress = Math.min((timestamp - startTime) / duration, 1);
+          var eased = 0.5 - Math.cos(progress * Math.PI) / 2;
+          panel.style.maxWidth = (start + (end - start) * eased) + 'px';
+          if (progress < 1) requestAnimationFrame(animate);
+        }
+        requestAnimationFrame(animate);
+      }
+    });
   });
 
-  if (window.location.hash && window.location.hash == "#blog") {
-    $('.panel-cover').addClass('panel-cover--collapsed');
-    $('.main-post-list').removeClass('hidden');
+  if (window.location.hash && window.location.hash === '#blog') {
+    document.querySelector('.panel-cover').classList.add('panel-cover--collapsed');
+    document.querySelector('.main-post-list').classList.remove('hidden');
   }
 
-  if (window.location.pathname.substring(0, 5) == "/tag/") {
-    $('.panel-cover').addClass('panel-cover--collapsed');
+  if (window.location.pathname.substring(0, 5) === '/tag/') {
+    document.querySelector('.panel-cover').classList.add('panel-cover--collapsed');
   }
-
-  $('.btn-mobile-menu__icon').click(function() {
-    // 导航按钮被点击
-    // this.style.backgroundColor = '#fff'; 设置颜色后会自动消失
-  });  
 });
