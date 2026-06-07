@@ -5,10 +5,10 @@ title: 工具
 
 <div class="tools-container">
   <div class="tools-tabs">
-    <button class="tools-tab active" onclick="switchTab('b64')">Base64</button>
-    <button class="tools-tab" onclick="switchTab('url')">URL</button>
-    <button class="tools-tab" onclick="switchTab('hex')">Hex</button>
-    <button class="tools-tab" onclick="switchTab('ts')">时间戳</button>
+    <button class="tools-tab active" onclick="switchTab(this,'b64')">Base64</button>
+    <button class="tools-tab" onclick="switchTab(this,'url')">URL</button>
+    <button class="tools-tab" onclick="switchTab(this,'hex')">Hex</button>
+    <button class="tools-tab" onclick="switchTab(this,'ts')">时间戳</button>
   </div>
 
   <!-- Base64 -->
@@ -95,11 +95,11 @@ title: 工具
 </div>
 
 <script>
-function switchTab(name) {
+function switchTab(btn, name) {
   document.querySelectorAll('.tools-panel').forEach(function(p) { p.classList.remove('active'); });
   document.querySelectorAll('.tools-tab').forEach(function(t) { t.classList.remove('active'); });
   document.getElementById('tab-' + name).classList.add('active');
-  event.target.classList.add('active');
+  btn.classList.add('active');
 }
 
 function clearFields() {
