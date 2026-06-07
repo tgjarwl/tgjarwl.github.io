@@ -102,14 +102,12 @@ title: 工具
 
   <!-- JSON -->
   <div id="tab-json" class="tools-panel">
-    <div class="tool-row">
-      <textarea id="json-input" class="tool-textarea" placeholder='输入 JSON 字符串，如 {"name":"test","value":123}'></textarea>
-      <div class="tool-buttons">
-        <button class="tool-btn" onclick="jsonFormat()">格式化</button>
-        <button class="tool-btn" onclick="jsonCompress()">压缩</button>
-        <button class="tool-btn tool-btn-secondary" onclick="clearFields('json-input')">清空</button>
-      </div>
+    <div class="tool-buttons" style="margin-bottom:8px">
+      <button class="tool-btn" onclick="jsonFormat()">格式化</button>
+      <button class="tool-btn" onclick="jsonCompress()">压缩</button>
+      <button class="tool-btn tool-btn-secondary" onclick="clearFields('json-input')">清空</button>
     </div>
+    <textarea id="json-input" class="tool-textarea tool-textarea--full" placeholder='输入 JSON 字符串，如 {"name":"test","value":123}'></textarea>
   </div>
 
 </div>

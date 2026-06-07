@@ -1480,6 +1480,11 @@ nav a {
   outline: none;
   border-color: #5BA4E5;
 }
+.tool-textarea--full {
+  width: 95%;
+  min-height: calc(100vh - 260px);
+  resize: none;
+}
 .tool-buttons {
   display: flex;
   gap: 6px;
