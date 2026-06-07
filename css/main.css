@@ -552,7 +552,7 @@ img::-moz-selection {
     border-top: 1px solid rgba(255, 255, 255, 0.14); }
 
   .panel-cover__divider--secondary {
-    width: 15%; }
+    width: 50%; }
 
   .panel-main {
     display: table;
@@ -1470,7 +1470,7 @@ nav a {
 }
 .tool-textarea {
   width: 95%;
-  min-height: 160px;
+  min-height: calc((100vh - 300px) / 2);
   padding: 10px;
   border: 1px solid #c9e1f6;
   border-radius: 4px;
