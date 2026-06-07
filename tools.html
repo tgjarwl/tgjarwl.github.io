@@ -4,56 +4,77 @@ title: 工具
 ---
 
 <div class="tools-container">
+  <div class="tools-tabs">
+    <button class="tools-tab active" onclick="switchTab('b64')">Base64</button>
+    <button class="tools-tab" onclick="switchTab('url')">URL</button>
+    <button class="tools-tab" onclick="switchTab('hex')">Hex</button>
+    <button class="tools-tab" onclick="switchTab('ts')">时间戳</button>
+  </div>
 
   <!-- Base64 -->
-  <div class="tool-section">
-    <h3>Base64 编解码</h3>
+  <div id="tab-b64" class="tools-panel active">
     <div class="tool-row">
-      <textarea id="b64-input" class="tool-textarea" placeholder="输入文本或 Base64 字符串"></textarea>
+      <div class="tool-field">
+        <label>输入</label>
+        <textarea id="b64-input" class="tool-textarea" placeholder="输入文本或 Base64 字符串"></textarea>
+      </div>
       <div class="tool-buttons">
         <button class="tool-btn" onclick="b64Encode()">编码 &darr;</button>
         <button class="tool-btn" onclick="b64Decode()">解码 &uarr;</button>
         <button class="tool-btn tool-btn-secondary" onclick="b64Swap()">交换 &#8644;</button>
+        <button class="tool-btn tool-btn-secondary" onclick="clearFields('b64-input','b64-output')">清空</button>
       </div>
-      <textarea id="b64-output" class="tool-textarea" placeholder="输出结果" readonly></textarea>
+      <div class="tool-field">
+        <label>输出</label>
+        <textarea id="b64-output" class="tool-textarea" placeholder="输出结果" readonly></textarea>
+      </div>
     </div>
   </div>
 
   <!-- URL -->
-  <div class="tool-section">
-    <h3>URL 编解码</h3>
+  <div id="tab-url" class="tools-panel">
     <div class="tool-row">
-      <textarea id="url-input" class="tool-textarea" placeholder="输入文本或 URL 编码字符串"></textarea>
-      <div class="tool-buttons">
-        <button class="tool-btn" onclick="urlEncode()">编码 &darr;</button>
-        <button class="tool-btn" onclick="urlDecode()">解码 &uarr;</button>
-        <button class="tool-btn tool-btn-secondary" onclick="urlSwap()">交换 &#8644;</button>
+      <div class="tool-field">
+        <label>输入</label>
+        <textarea id="url-input" class="tool-textarea" placeholder="输入文本或 URL 编码字符串"></textarea>
       </div>
-      <div class="tool-buttons" style="margin-top:6px">
+      <div class="tool-buttons">
+        <button class="tool-btn" onclick="urlEncode()">encodeURI &darr;</button>
+        <button class="tool-btn" onclick="urlDecode()">decodeURI &uarr;</button>
         <button class="tool-btn tool-btn-secondary" onclick="urlEncodeComponent()">encodeURIComponent &darr;</button>
         <button class="tool-btn tool-btn-secondary" onclick="urlDecodeComponent()">decodeURIComponent &uarr;</button>
+        <button class="tool-btn tool-btn-secondary" onclick="urlSwap()">交换 &#8644;</button>
+        <button class="tool-btn tool-btn-secondary" onclick="clearFields('url-input','url-output')">清空</button>
       </div>
-      <textarea id="url-output" class="tool-textarea" placeholder="输出结果" readonly></textarea>
+      <div class="tool-field">
+        <label>输出</label>
+        <textarea id="url-output" class="tool-textarea" placeholder="输出结果" readonly></textarea>
+      </div>
     </div>
   </div>
 
   <!-- Hex -->
-  <div class="tool-section">
-    <h3>Hex / ASCII 转换</h3>
+  <div id="tab-hex" class="tools-panel">
     <div class="tool-row">
-      <textarea id="hex-input" class="tool-textarea" placeholder="输入文本或 Hex 字符串 (如 48 65 6C 6C 6F)"></textarea>
+      <div class="tool-field">
+        <label>输入</label>
+        <textarea id="hex-input" class="tool-textarea" placeholder="输入文本或 Hex 字符串 (如 48 65 6C 6C 6F)"></textarea>
+      </div>
       <div class="tool-buttons">
         <button class="tool-btn" onclick="hexEncode()">文本 &rarr; Hex &darr;</button>
         <button class="tool-btn" onclick="hexDecode()">Hex &rarr; 文本 &uarr;</button>
         <button class="tool-btn tool-btn-secondary" onclick="hexSwap()">交换 &#8644;</button>
+        <button class="tool-btn tool-btn-secondary" onclick="clearFields('hex-input','hex-output')">清空</button>
       </div>
-      <textarea id="hex-output" class="tool-textarea" placeholder="输出结果" readonly></textarea>
+      <div class="tool-field">
+        <label>输出</label>
+        <textarea id="hex-output" class="tool-textarea" placeholder="输出结果" readonly></textarea>
+      </div>
     </div>
   </div>
 
   <!-- Timestamp -->
-  <div class="tool-section">
-    <h3>时间戳转换</h3>
+  <div id="tab-ts" class="tools-panel">
     <div class="tool-row">
       <div class="tool-field">
         <label>Unix 时间戳 (秒)</label>
@@ -65,7 +86,7 @@ title: 工具
         <button class="tool-btn tool-btn-secondary" onclick="tsNow()">当前时间戳</button>
       </div>
       <div class="tool-field">
-        <label>日期时间 (UTC+8)</label>
+        <label>日期时间</label>
         <input type="text" id="ts-output" class="tool-input" placeholder="如 2023-11-15 06:13:20">
       </div>
     </div>
@@ -74,6 +95,19 @@ title: 工具
 </div>
 
 <script>
+function switchTab(name) {
+  document.querySelectorAll('.tools-panel').forEach(function(p) { p.classList.remove('active'); });
+  document.querySelectorAll('.tools-tab').forEach(function(t) { t.classList.remove('active'); });
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function clearFields() {
+  for (var i = 0; i < arguments.length; i++) {
+    document.getElementById(arguments[i]).value = '';
+  }
+}
+
 // Base64
 function b64Encode() {
   var input = document.getElementById('b64-input').value;
@@ -159,7 +193,7 @@ function tsToDate() {
     document.getElementById('ts-output').value = '请输入有效的时间戳';
     return;
   }
-  if (ts > 1e12) ts = Math.floor(ts / 1000); // ms -> s
+  if (ts > 1e12) ts = Math.floor(ts / 1000);
   var d = new Date(ts * 1000);
   document.getElementById('ts-output').value = formatDate(d);
 }

@@ -1425,20 +1425,44 @@ nav a {
 .tools-container {
   max-width: 700px;
 }
-.tool-section {
-  margin-bottom: 35px;
+.tools-tabs {
+  display: flex;
+  border-bottom: 2px solid #ddd;
+  margin-bottom: 20px;
 }
-.tool-section h3 {
-  font-size: 1.1em;
+.tools-tab {
+  padding: 8px 20px;
+  border: none;
+  background: none;
+  font-size: 0.95em;
+  color: #666;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: all 0.2s;
+}
+.tools-tab:hover {
+  color: #1874CD;
+}
+.tools-tab.active {
+  color: #1874CD;
+  border-bottom-color: #1874CD;
+  font-weight: bold;
+}
+.tools-panel {
+  display: none;
+}
+.tools-panel.active {
+  display: block;
 }
 .tool-row {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 .tool-textarea {
   width: 95%;
-  min-height: 80px;
+  min-height: 100px;
   padding: 10px;
   border: 1px solid #c9e1f6;
   border-radius: 4px;
@@ -1504,6 +1528,13 @@ nav a {
   border-color: #5BA4E5;
 }
 @media all and (max-width: 600px) {
+  .tools-tabs {
+    overflow-x: auto;
+  }
+  .tools-tab {
+    padding: 8px 14px;
+    font-size: 0.85em;
+  }
   .tool-textarea, .tool-input {
     width: 100%;
   }
