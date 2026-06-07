@@ -501,17 +501,21 @@ img::-moz-selection {
   .panel-title {
     margin: 0 0 5px 0;
     margin-top: 20px;
-    font-size: 1.8em;
+    font-size: 2.2em;
     letter-spacing: 4px;
     color: #FFF; }
 
   .panel-subtitle {
     font-family: "ff-tisa-web-pro-1", "ff-tisa-web-pro-2", "Lucida Grande", "Hiragino Sans GB", "Hiragino Sans GB W3", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
-    font-size: 0.8em;
+    font-size: 1em;
     font-weight: lighter;
     letter-spacing: 3px;
     color: #CCCCCC;
     -webkit-font-smoothing: antialiased; }
+
+  .panel-cover__description {
+    margin: 0 30px;
+    font-size: 1.1em; }
 
   .panel-cover {
     display: block;
@@ -541,9 +545,6 @@ img::-moz-selection {
 
   .panel-cover__logo {
     margin-bottom: .2em; }
-
-  .panel-cover__description {
-    margin: 0 30px; }
 
   .panel-cover__divider {
     width: 50%;
@@ -1485,7 +1486,7 @@ nav a {
 }
 .tool-textarea--full {
   width: 95%;
-  min-height: 480px;
+  min-height: calc(100vh - 300px);
   resize: vertical;
 }
 .tool-buttons {
