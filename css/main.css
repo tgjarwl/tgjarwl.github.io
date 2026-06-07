@@ -507,7 +507,7 @@ img::-moz-selection {
 
   .panel-subtitle {
     font-family: "ff-tisa-web-pro-1", "ff-tisa-web-pro-2", "Lucida Grande", "Hiragino Sans GB", "Hiragino Sans GB W3", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
-    font-size: 0.6em;
+    font-size: 0.8em;
     font-weight: lighter;
     letter-spacing: 3px;
     color: #CCCCCC;
@@ -735,6 +735,7 @@ img::-moz-selection {
     width: 100%;
     border-color: #666;
     color: #666;
+    font-size: 1em;
     /*opacity: .8; */
   }
 
@@ -804,9 +805,6 @@ img::-moz-selection {
     position: relative;
    }
 
-  .main-post-list {
-    font-size: 1.6em;
-  }
 
   .post-list {
     margin: 0;
@@ -1382,7 +1380,7 @@ nav a {
   padding: 0px;
   color: #999;
   font-weight: 700;
-  font-size: .8em;
+  font-size: 1em;
   text-shadow: none;
   -webkit-transition: color 0.3s;
   -moz-transition: color 0.3s;
