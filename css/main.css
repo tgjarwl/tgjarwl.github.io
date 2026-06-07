@@ -62,7 +62,7 @@ html {
 
 body {
   font-family: "ff-tisa-web-pro-1", "ff-tisa-web-pro-2", "Lucida Grande", "Hiragino Sans GB", "Hiragino Sans GB W3", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
-  font-size: 16px;
+  font-size: 18px;
   color: #333;
   -webkit-font-smoothing: antialiased; }
 
@@ -1462,7 +1462,7 @@ nav a {
 }
 .tool-textarea {
   width: 95%;
-  min-height: 100px;
+  min-height: 160px;
   padding: 10px;
   border: 1px solid #c9e1f6;
   border-radius: 4px;
