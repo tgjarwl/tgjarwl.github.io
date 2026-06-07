@@ -386,11 +386,15 @@ img::-moz-selection {
   .content-wrapper {
     z-index: 800;
     width: 75%;
-    margin-left: 25%; }
+    margin-left: 25%;
+    min-height: 100vh; }
 
   .content-wrapper__inner {
     margin-right: 30px;
-    padding: 50px 0; 
+    padding: 50px 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; 
     /*margin: 0 auto; */
     /*width: 700px;*/
   }
@@ -400,7 +404,8 @@ img::-moz-selection {
     padding: 2em 0 0 0;
     border-top: 1px solid #DDDDDD;
     font-size: .7em;
-    color: #b3b3b3; }
+    color: #b3b3b3;
+    margin-top: auto; }
 
   .footer__copyright {
     display: block;
