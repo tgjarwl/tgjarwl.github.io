@@ -1482,8 +1482,8 @@ nav a {
 }
 .tool-textarea--full {
   width: 95%;
-  min-height: calc(100vh - 260px);
-  resize: none;
+  min-height: 480px;
+  resize: vertical;
 }
 .tool-buttons {
   display: flex;
