@@ -298,21 +298,14 @@ function formatDate(d) {
 
 // JSON
 function jsonTryParse(str) {
-  // 先尝试标准解析
   try { return { obj: JSON.parse(str), fixed: false }; } catch(e) {}
-  // 容错修复
   var s = str;
-  // 去掉注释
   s = s.replace(/\/\/.*$/gm, '');
   s = s.replace(/\/\*[\s\S]*?\*\//g, '');
-  // 单引号 → 双引号
   s = s.replace(/'/g, '"');
-  // 去掉尾随逗号 (}, ], }, ])
   s = s.replace(/,\s*([\]}])/g, '$1');
-  // 给无引号的 key 加引号
   s = s.replace(/([{,]\s*)([a-zA-Z_$][a-zA-Z0-9_$]*)\s*:/g, '$1"$2":');
   try { return { obj: JSON.parse(s), fixed: true }; } catch(e2) {}
-  // 最后尝试：逐字符尝试找到最长可解析前缀
   return null;
 }
 function jsonFormat() {
@@ -323,7 +316,6 @@ function jsonFormat() {
     el.value = JSON.stringify(result.obj, null, 2);
     if (result.fixed) el.value = '/* 已自动修复格式，请核对 */\n' + el.value;
   } else {
-    // 容错格式化：不依赖 parse，手动缩进
     el.value = jsonTolerantFormat(el.value);
   }
 }
@@ -335,39 +327,64 @@ function jsonCompress() {
     el.value = JSON.stringify(result.obj);
     if (result.fixed) el.value = '/* 已自动修复格式，请核对 */' + el.value;
   } else {
-    // 容错压缩：去掉多余空白
-    el.value = el.value.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '').replace(/\n/g, ' ').replace(/\s+/g, ' ').trim();
+    el.value = jsonTolerantCompress(el.value);
   }
 }
 function jsonTolerantFormat(str) {
-  // 简易容错缩进格式化，不依赖 JSON.parse
-  var result = '', indent = 0, inStr = false, esc = false, last = '';
+  var out = '', indent = 0, inStr = false, strCh = '', esc = false;
+  var stack = [];
+  var pad = function(n) { var s = ''; for (var i = 0; i < n; i++) s += '  '; return s; };
   for (var i = 0; i < str.length; i++) {
     var c = str[i];
-    if (esc) { result += c; esc = false; continue; }
-    if (c === '\\') { result += c; esc = true; continue; }
-    if (c === '"') { inStr = !inStr; result += c; continue; }
-    if (inStr) { result += c; continue; }
+    if (esc) { out += c; esc = false; continue; }
+    if (c === '\\' && inStr) { out += c; esc = true; continue; }
+    if (!inStr && (c === '"' || c === "'")) { inStr = true; strCh = c; out += '"'; continue; }
+    if (inStr && c === strCh) { inStr = false; out += '"'; continue; }
+    if (inStr) { out += c; continue; }
     if (c === '{' || c === '[') {
-      result += c + '\n';
-      indent++;
-      result += '  '.repeat(indent);
+      out += c + '\n' + pad(++indent);
+      stack.push(c === '{' ? '}' : ']');
     } else if (c === '}' || c === ']') {
-      result += '\n';
-      indent--;
-      result += '  '.repeat(indent) + c;
+      if (stack.length > 0 && stack[stack.length - 1] === c) {
+        stack.pop();
+        indent = Math.max(0, indent - 1);
+        out += '\n' + pad(indent) + c;
+      } else {
+        // 不匹配的闭合括号，尝试恢复
+        var idx = stack.lastIndexOf(c);
+        if (idx >= 0) {
+          stack.splice(idx);
+          indent = stack.length;
+          out += '\n' + pad(indent) + c;
+        } else {
+          out += c;
+        }
+      }
     } else if (c === ',') {
-      result += c + '\n' + '  '.repeat(indent);
+      out += c + '\n' + pad(indent);
     } else if (c === ':') {
-      result += c + ' ';
-    } else if (c === ' ' || c === '\t' || c === '\n' || c === '\r') {
-      // 跳过原有空白，由缩进控制
+      out += ': ';
+    } else if (' \t\n\r'.indexOf(c) >= 0) {
+      // 跳过
     } else {
-      result += c;
+      out += c;
     }
-    last = c;
   }
-  return result;
+  return out;
+}
+function jsonTolerantCompress(str) {
+  var out = '', inStr = false, strCh = '', esc = false;
+  for (var i = 0; i < str.length; i++) {
+    var c = str[i];
+    if (esc) { out += c; esc = false; continue; }
+    if (c === '\\' && inStr) { out += c; esc = true; continue; }
+    if (!inStr && (c === '"' || c === "'")) { inStr = true; strCh = c; out += '"'; continue; }
+    if (inStr && c === strCh) { inStr = false; out += '"'; continue; }
+    if (inStr) { out += c; continue; }
+    if (' \t\n\r'.indexOf(c) >= 0) continue;
+    out += c;
+  }
+  return out;
 }
 
 // Hash
