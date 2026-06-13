@@ -1555,4 +1555,25 @@ nav a {
     width: 100%;
   }
 }
+.json-output {
+  font-family: Consolas, Menlo, Monaco, monospace;
+  font-size: 0.9em;
+  padding: 10px;
+  border: 1px solid #c9e1f6;
+  border-radius: 4px;
+  background: #e8f2fb;
+  min-height: calc(100vh - 380px);
+  max-height: calc(100vh - 260px);
+  overflow: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  margin: 0;
+  box-sizing: border-box;
+  width: 95%;
+}
+.json-error-line {
+  background: #ffe0e0;
+  color: #c00;
+  display: inline;
+}
 /*工具页-end*/

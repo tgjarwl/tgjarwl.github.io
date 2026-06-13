@@ -103,12 +103,14 @@ title: 工具
 
   <!-- JSON -->
   <div id="tab-json" class="tools-panel">
-    <div class="tool-buttons" style="margin-bottom:8px">
+    <textarea id="json-input" class="tool-textarea" style="min-height:120px" placeholder='输入 JSON 字符串，如 {"name":"test","value":123}'></textarea>
+    <div class="tool-buttons" style="margin:8px 0">
       <button class="tool-btn" onclick="jsonFormat()">格式化</button>
       <button class="tool-btn" onclick="jsonCompress()">压缩</button>
-      <button class="tool-btn tool-btn-secondary" onclick="clearFields('json-input')">清空</button>
+      <button class="tool-btn tool-btn-secondary" onclick="jsonCopy()">复制结果</button>
+      <button class="tool-btn tool-btn-secondary" onclick="jsonClear()">清空</button>
     </div>
-    <textarea id="json-input" class="tool-textarea tool-textarea--full" placeholder='输入 JSON 字符串，如 {"name":"test","value":123}'></textarea>
+    <pre id="json-output" class="json-output" style="display:none"></pre>
   </div>
 
   <!-- Hash -->
@@ -308,78 +310,139 @@ function jsonTryParse(str) {
   try { return { obj: JSON.parse(s), fixed: true }; } catch(e2) {}
   return null;
 }
+function jsonShowOutput(text, errorLines) {
+  var pre = document.getElementById('json-output');
+  var lines = text.split('\n');
+  var html = '';
+  for (var i = 0; i < lines.length; i++) {
+    var ln = i + 1;
+    var escaped = lines[i].replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    if (errorLines.indexOf(ln) >= 0) {
+      html += '<span class="json-error-line">' + escaped + '</span>\n';
+    } else {
+      html += escaped + '\n';
+    }
+  }
+  pre.innerHTML = html;
+  pre.style.display = 'block';
+}
 function jsonFormat() {
-  var el = document.getElementById('json-input');
-  if (!el.value.trim()) return;
-  var result = jsonTryParse(el.value);
+  var input = document.getElementById('json-input').value.trim();
+  if (!input) return;
+  var result = jsonTryParse(input);
   if (result) {
-    el.value = JSON.stringify(result.obj, null, 2);
-    if (result.fixed) el.value = '/* 已自动修复格式，请核对 */\n' + el.value;
+    var out = JSON.stringify(result.obj, null, 2);
+    if (result.fixed) out = '/* 已自动修复格式，请核对 */\n' + out;
+    jsonShowOutput(out, []);
   } else {
-    el.value = jsonTolerantFormat(el.value);
+    var r = jsonTolerantFormat(input);
+    jsonShowOutput(r.text, r.errorLines);
   }
 }
 function jsonCompress() {
-  var el = document.getElementById('json-input');
-  if (!el.value.trim()) return;
-  var result = jsonTryParse(el.value);
+  var input = document.getElementById('json-input').value.trim();
+  if (!input) return;
+  var result = jsonTryParse(input);
   if (result) {
-    el.value = JSON.stringify(result.obj);
-    if (result.fixed) el.value = '/* 已自动修复格式，请核对 */' + el.value;
+    var out = JSON.stringify(result.obj);
+    if (result.fixed) out = '/* 已自动修复格式，请核对 */' + out;
+    jsonShowOutput(out, []);
   } else {
-    el.value = jsonTolerantCompress(el.value);
+    jsonShowOutput(jsonTolerantCompress(input), []);
   }
 }
+function jsonCopy() {
+  var pre = document.getElementById('json-output');
+  if (!pre.textContent) return;
+  navigator.clipboard.writeText(pre.textContent).then(function() {
+    alert('已复制到剪贴板');
+  });
+}
+function jsonClear() {
+  document.getElementById('json-input').value = '';
+  var pre = document.getElementById('json-output');
+  pre.innerHTML = '';
+  pre.style.display = 'none';
+}
 function jsonTolerantFormat(str) {
-  var out = '', indent = 0, inStr = false, strCh = '', esc = false;
-  var stack = [];
+  var out = '', indent = 0, inStr = false, esc = false;
+  var stack = [], errorLines = [], lineNum = 1;
   var pad = function(n) { var s = ''; for (var i = 0; i < n; i++) s += '  '; return s; };
+  var isStrStart = function(p) { return '{,[: \t\n\r'.indexOf(p) >= 0 || p === ''; };
+  var isStrEnd = function(n) { return '},]: \t\n\r'.indexOf(n) >= 0 || n === ''; };
+  var markError = function() { if (errorLines.indexOf(lineNum) < 0) errorLines.push(lineNum); };
+
   for (var i = 0; i < str.length; i++) {
-    var c = str[i];
+    var c = str[i], prev = i > 0 ? str[i - 1] : '', next = i < str.length - 1 ? str[i + 1] : '';
+
     if (esc) { out += c; esc = false; continue; }
     if (c === '\\' && inStr) { out += c; esc = true; continue; }
-    if (!inStr && (c === '"' || c === "'")) { inStr = true; strCh = c; out += '"'; continue; }
-    if (inStr && c === strCh) { inStr = false; out += '"'; continue; }
-    if (inStr) { out += c; continue; }
+
+    if (c === '"' || c === "'") {
+      if (!inStr) {
+        if (isStrStart(prev)) {
+          inStr = true; out += '"';
+        } else {
+          out += c; // 保留字符，不删
+          markError();
+        }
+        continue;
+      } else {
+        if (isStrEnd(next)) {
+          inStr = false; out += '"';
+        } else {
+          out += '"'; // 保留字符
+          markError();
+        }
+        continue;
+      }
+    }
+
+    if (inStr) { out += c; if (c === '\n') lineNum++; continue; }
+
     if (c === '{' || c === '[') {
-      out += c + '\n' + pad(++indent);
+      out += c + '\n' + pad(++indent); lineNum++;
       stack.push(c === '{' ? '}' : ']');
     } else if (c === '}' || c === ']') {
       if (stack.length > 0 && stack[stack.length - 1] === c) {
-        stack.pop();
-        indent = Math.max(0, indent - 1);
-        out += '\n' + pad(indent) + c;
+        stack.pop(); indent = Math.max(0, indent - 1);
+        out += '\n' + pad(indent) + c; lineNum++;
       } else {
-        // 不匹配的闭合括号，尝试恢复
         var idx = stack.lastIndexOf(c);
-        if (idx >= 0) {
-          stack.splice(idx);
-          indent = stack.length;
-          out += '\n' + pad(indent) + c;
-        } else {
-          out += c;
-        }
+        if (idx >= 0) { stack.splice(idx); indent = stack.length; out += '\n' + pad(indent) + c; lineNum++; markError(); }
+        else { out += c; markError(); }
       }
     } else if (c === ',') {
-      out += c + '\n' + pad(indent);
+      out += c + '\n' + pad(indent); lineNum++;
     } else if (c === ':') {
       out += ': ';
     } else if (' \t\n\r'.indexOf(c) >= 0) {
-      // 跳过
+      // skip
     } else {
       out += c;
     }
   }
-  return out;
+  return { text: out, errorLines: errorLines };
 }
 function jsonTolerantCompress(str) {
-  var out = '', inStr = false, strCh = '', esc = false;
+  var out = '', inStr = false, esc = false;
+  var isStrStart = function(p) { return '{,[: \t\n\r'.indexOf(p) >= 0 || p === ''; };
+  var isStrEnd = function(n) { return '},]: \t\n\r'.indexOf(n) >= 0 || n === ''; };
   for (var i = 0; i < str.length; i++) {
-    var c = str[i];
+    var c = str[i], prev = i > 0 ? str[i - 1] : '', next = i < str.length - 1 ? str[i + 1] : '';
     if (esc) { out += c; esc = false; continue; }
     if (c === '\\' && inStr) { out += c; esc = true; continue; }
-    if (!inStr && (c === '"' || c === "'")) { inStr = true; strCh = c; out += '"'; continue; }
-    if (inStr && c === strCh) { inStr = false; out += '"'; continue; }
+    if (c === '"' || c === "'") {
+      if (!inStr) {
+        if (isStrStart(prev)) { inStr = true; out += '"'; }
+        else out += c; // 保留
+        continue;
+      } else {
+        if (isStrEnd(next)) { inStr = false; out += '"'; }
+        else out += '"'; // 保留
+        continue;
+      }
+    }
     if (inStr) { out += c; continue; }
     if (' \t\n\r'.indexOf(c) >= 0) continue;
     out += c;
