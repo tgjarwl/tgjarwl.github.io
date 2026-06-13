@@ -367,10 +367,17 @@ function jsonClear() {
 function jsonTolerantFormat(str) {
   var out = '', indent = 0, inStr = false, esc = false;
   var stack = [], errorLines = [], lineNum = 1;
+  // 状态追踪：检测对象/数组中各位置的语法错误
+  var expectKey = false;   // 对象中 { 或 , 后，期望 key
+  var expectColon = false; // key 后，期望 :
+  var expectValue = false; // : 或 [ 或 , 后，期望 value
+  var pendingKey = false;  // 正在读取一个可能是 key 的字符串
+
   var pad = function(n) { var s = ''; for (var i = 0; i < n; i++) s += '  '; return s; };
   var isStrStart = function(p) { return '{,[: \t\n\r'.indexOf(p) >= 0 || p === ''; };
   var isStrEnd = function(n) { return '},]: \t\n\r'.indexOf(n) >= 0 || n === ''; };
   var markError = function() { if (errorLines.indexOf(lineNum) < 0) errorLines.push(lineNum); };
+  var inObject = function() { return stack.length > 0 && stack[stack.length - 1] === '}'; };
 
   for (var i = 0; i < str.length; i++) {
     var c = str[i], prev = i > 0 ? str[i - 1] : '', next = i < str.length - 1 ? str[i + 1] : '';
@@ -378,21 +385,26 @@ function jsonTolerantFormat(str) {
     if (esc) { out += c; esc = false; continue; }
     if (c === '\\' && inStr) { out += c; esc = true; continue; }
 
+    // 引号处理（启发式 + 状态追踪）
     if (c === '"' || c === "'") {
       if (!inStr) {
         if (isStrStart(prev)) {
           inStr = true; out += '"';
+          if (expectKey && inObject()) {
+            pendingKey = true; expectKey = false;  // 对象中的 key
+          } else if (expectValue) {
+            expectValue = false;  // 值
+          }
         } else {
-          out += c; // 保留字符，不删
-          markError();
+          out += c; markError();  // 孤立引号，保留但不切换状态
         }
         continue;
       } else {
         if (isStrEnd(next)) {
           inStr = false; out += '"';
+          if (pendingKey) { expectColon = true; pendingKey = false; }
         } else {
-          out += '"'; // 保留字符
-          markError();
+          out += '"'; markError();  // 字符串内嵌引号，保留
         }
         continue;
       }
@@ -400,9 +412,14 @@ function jsonTolerantFormat(str) {
 
     if (inStr) { out += c; if (c === '\n') lineNum++; continue; }
 
+    // 结构字符 + 状态追踪
     if (c === '{' || c === '[') {
+      if (expectKey && inObject()) { markError(); expectKey = false; }
       out += c + '\n' + pad(++indent); lineNum++;
       stack.push(c === '{' ? '}' : ']');
+      expectKey = (c === '{');
+      expectValue = (c === '[');
+      expectColon = false; pendingKey = false;
     } else if (c === '}' || c === ']') {
       if (stack.length > 0 && stack[stack.length - 1] === c) {
         stack.pop(); indent = Math.max(0, indent - 1);
@@ -412,13 +429,24 @@ function jsonTolerantFormat(str) {
         if (idx >= 0) { stack.splice(idx); indent = stack.length; out += '\n' + pad(indent) + c; lineNum++; markError(); }
         else { out += c; markError(); }
       }
-    } else if (c === ',') {
-      out += c + '\n' + pad(indent); lineNum++;
+      expectKey = false; expectColon = false; expectValue = false; pendingKey = false;
     } else if (c === ':') {
+      if (!expectColon && !pendingKey) markError();  // 冒号不在期望位置
+      expectColon = false; pendingKey = false;
+      expectValue = true;
       out += ': ';
+    } else if (c === ',') {
+      if (inObject()) { expectKey = true; expectValue = false; }
+      else { expectValue = true; expectKey = false; }
+      expectColon = false; pendingKey = false;
+      out += c + '\n' + pad(indent); lineNum++;
     } else if (' \t\n\r'.indexOf(c) >= 0) {
       // skip
     } else {
+      // 普通字符（数字、标识符等）
+      if (expectKey && inObject()) markError();  // 对象中期望 key 却出现裸值
+      if (expectColon) markError();  // key 后没有冒号
+      expectKey = false; expectColon = false; expectValue = false;
       out += c;
     }
   }
@@ -435,11 +463,11 @@ function jsonTolerantCompress(str) {
     if (c === '"' || c === "'") {
       if (!inStr) {
         if (isStrStart(prev)) { inStr = true; out += '"'; }
-        else out += c; // 保留
+        else out += c;
         continue;
       } else {
         if (isStrEnd(next)) { inStr = false; out += '"'; }
-        else out += '"'; // 保留
+        else out += '"';
         continue;
       }
     }
