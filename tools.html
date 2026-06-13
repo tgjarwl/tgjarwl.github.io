@@ -6,11 +6,11 @@ title: 工具
 <div class="tools-container">
   <div class="tools-tabs">
     <button class="tools-tab active" onclick="switchTab(this,'b64')">Base64</button>
-    <button class="tools-tab" onclick="switchTab(this,'url')">URL</button>
-    <button class="tools-tab" onclick="switchTab(this,'hex')">Hex</button>
-    <button class="tools-tab" onclick="switchTab(this,'ts')">时间戳</button>
     <button class="tools-tab" onclick="switchTab(this,'json')">JSON</button>
+    <button class="tools-tab" onclick="switchTab(this,'hex')">Hex</button>
     <button class="tools-tab" onclick="switchTab(this,'hash')">Hash</button>
+    <button class="tools-tab" onclick="switchTab(this,'url')">URL</button>
+    <button class="tools-tab" onclick="switchTab(this,'ts')">时间戳</button>
   </div>
 
   <!-- Base64 -->
@@ -33,26 +33,16 @@ title: 工具
     </div>
   </div>
 
-  <!-- URL -->
-  <div id="tab-url" class="tools-panel">
-    <div class="tool-row">
-      <div class="tool-field">
-        <label>输入</label>
-        <textarea id="url-input" class="tool-textarea tool-textarea--half" placeholder="输入文本或 URL 编码字符串"></textarea>
-      </div>
-      <div class="tool-buttons">
-        <button class="tool-btn" onclick="urlEncode()">encodeURI &darr;</button>
-        <button class="tool-btn" onclick="urlDecode()">decodeURI &uarr;</button>
-        <button class="tool-btn tool-btn-secondary" onclick="urlEncodeComponent()">encodeURIComponent &darr;</button>
-        <button class="tool-btn tool-btn-secondary" onclick="urlDecodeComponent()">decodeURIComponent &uarr;</button>
-        <button class="tool-btn tool-btn-secondary" onclick="urlSwap()">交换 &#8644;</button>
-        <button class="tool-btn tool-btn-secondary" onclick="clearFields('url-input','url-output')">清空</button>
-      </div>
-      <div class="tool-field">
-        <label>输出</label>
-        <textarea id="url-output" class="tool-textarea tool-textarea--half" placeholder="输出结果" readonly></textarea>
-      </div>
+  <!-- JSON -->
+  <div id="tab-json" class="tools-panel">
+    <textarea id="json-input" class="tool-textarea" style="min-height:120px" placeholder='输入 JSON 字符串，如 {"name":"test","value":123}'></textarea>
+    <div class="tool-buttons" style="margin:8px 0">
+      <button class="tool-btn" onclick="jsonFormat()">格式化</button>
+      <button class="tool-btn" onclick="jsonCompress()">压缩</button>
+      <button class="tool-btn tool-btn-secondary" onclick="jsonCopy()">复制结果</button>
+      <button class="tool-btn tool-btn-secondary" onclick="jsonClear()">清空</button>
     </div>
+    <pre id="json-output" class="json-output" style="display:none"></pre>
   </div>
 
   <!-- Hex -->
@@ -82,37 +72,6 @@ title: 工具
     </div>
   </div>
 
-  <!-- Timestamp -->
-  <div id="tab-ts" class="tools-panel">
-    <div class="tool-row">
-      <div class="tool-field">
-        <label>Unix 时间戳 (秒)</label>
-        <input type="text" id="ts-input" class="tool-input" placeholder="如 1700000000">
-      </div>
-      <div class="tool-buttons">
-        <button class="tool-btn" onclick="tsToDate()">时间戳 &rarr; 日期 &darr;</button>
-        <button class="tool-btn" onclick="dateToTs()">日期 &rarr; 时间戳 &uarr;</button>
-        <button class="tool-btn tool-btn-secondary" onclick="tsNow()">当前时间戳</button>
-      </div>
-      <div class="tool-field">
-        <label>日期时间</label>
-        <input type="text" id="ts-output" class="tool-input" placeholder="如 2023-11-15 06:13:20">
-      </div>
-    </div>
-  </div>
-
-  <!-- JSON -->
-  <div id="tab-json" class="tools-panel">
-    <textarea id="json-input" class="tool-textarea" style="min-height:120px" placeholder='输入 JSON 字符串，如 {"name":"test","value":123}'></textarea>
-    <div class="tool-buttons" style="margin:8px 0">
-      <button class="tool-btn" onclick="jsonFormat()">格式化</button>
-      <button class="tool-btn" onclick="jsonCompress()">压缩</button>
-      <button class="tool-btn tool-btn-secondary" onclick="jsonCopy()">复制结果</button>
-      <button class="tool-btn tool-btn-secondary" onclick="jsonClear()">清空</button>
-    </div>
-    <pre id="json-output" class="json-output" style="display:none"></pre>
-  </div>
-
   <!-- Hash -->
   <div id="tab-hash" class="tools-panel">
     <div class="tool-row">
@@ -139,6 +98,47 @@ title: 工具
       <div class="tool-field">
         <label>SHA-256</label>
         <input id="hash-out-sha256" class="tool-input" readonly onclick="this.select()">
+      </div>
+    </div>
+  </div>
+
+  <!-- URL -->
+  <div id="tab-url" class="tools-panel">
+    <div class="tool-row">
+      <div class="tool-field">
+        <label>输入</label>
+        <textarea id="url-input" class="tool-textarea tool-textarea--half" placeholder="输入文本或 URL 编码字符串"></textarea>
+      </div>
+      <div class="tool-buttons">
+        <button class="tool-btn" onclick="urlEncode()">encodeURI &darr;</button>
+        <button class="tool-btn" onclick="urlDecode()">decodeURI &uarr;</button>
+        <button class="tool-btn tool-btn-secondary" onclick="urlEncodeComponent()">encodeURIComponent &darr;</button>
+        <button class="tool-btn tool-btn-secondary" onclick="urlDecodeComponent()">decodeURIComponent &uarr;</button>
+        <button class="tool-btn tool-btn-secondary" onclick="urlSwap()">交换 &#8644;</button>
+        <button class="tool-btn tool-btn-secondary" onclick="clearFields('url-input','url-output')">清空</button>
+      </div>
+      <div class="tool-field">
+        <label>输出</label>
+        <textarea id="url-output" class="tool-textarea tool-textarea--half" placeholder="输出结果" readonly></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Timestamp -->
+  <div id="tab-ts" class="tools-panel">
+    <div class="tool-row">
+      <div class="tool-field">
+        <label>Unix 时间戳 (秒)</label>
+        <input type="text" id="ts-input" class="tool-input" placeholder="如 1700000000">
+      </div>
+      <div class="tool-buttons">
+        <button class="tool-btn" onclick="tsToDate()">时间戳 &rarr; 日期 &darr;</button>
+        <button class="tool-btn" onclick="dateToTs()">日期 &rarr; 时间戳 &uarr;</button>
+        <button class="tool-btn tool-btn-secondary" onclick="tsNow()">当前时间戳</button>
+      </div>
+      <div class="tool-field">
+        <label>日期时间</label>
+        <input type="text" id="ts-output" class="tool-input" placeholder="如 2023-11-15 06:13:20">
       </div>
     </div>
   </div>
